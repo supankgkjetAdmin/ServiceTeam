@@ -1,0 +1,3639 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KGK Jet India ERP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+
+
+  <style>
+
+    /*#wsrDonutLegend{  font-weight: 600;}
+    #wsrDonutLegend span{ font-weight: 600;}
+    #wsrDonutLegend{  color: #1a2a44;  }
+    #wsrDonutLegend span{  color: #0f172a;}
+    #wsrDonutLegend{  font-weight: 600;  font-size: 15px;}
+    #wsrDonutLegend div{ margin-bottom: 6px;}
+    #wsrDonutLegend span{letter-spacing: 0.3px;}*/
+
+    #installUploadProgressBox {  display: none !important;}
+    .filter-btn {padding:8px 15px;margin-right:10px; border:none;border-radius:6px;background:#1f6feb;color:white;    cursor:pointer; transition:0.2s;}
+    .filter-btn:hover { background:#1558b0;}
+    /* Active button */
+    .filter-btn.active {  background:#e09f3f;   /* Orange highlight */      color:black; font-weight:bold;}
+
+
+    .filter-btn {padding:8px 15px;margin-right:10px;border:none;border-radius:6px;background:#1f6feb;color:white;cursor:pointer;}
+    .filter-btn:hover {background:#1558b0;}
+
+    .dataTables_filter { text-align: left !important;}
+    .dataTables_length {  text-align: right !important;}
+    .dt-top{display:flex;  justify-content:space-between;  align-items:center;  margin-bottom:10px;}
+    .dt-bottom{  display:flex;  justify-content:space-between;  align-items:center;    margin-top:10px;}
+
+
+    .status-completed{  background-color:#2e7d32;  color:#fff;  padding:4px 8px;  border-radius:6px;  font-weight:700;  text-align:center;}
+
+    .status-pending{  background-color:#e53935;  color:#fff;  padding:4px 8px;  border-radius:6px;  font-weight:700;  text-align:center;}
+    .cluster-filters {display: flex;gap: 10px;margin-bottom: 15px;}
+    .cluster-filters select,
+    .cluster-filters button {padding: 6px 10px; border-radius: 6px;border: 1px solid #ccc;}
+    .subInfo{margin-top:6px;font-size:12px;font-weight:600;}
+    .activeCount{ color:#2e7d32;   /* Green */font-weight:800;}
+    .inactiveCount{  color:#e53935;   /* Red */  font-weight:800;  margin-left:12px;}
+    .deadCount{  color:#b71c1c;   /* Dark Red */  font-weight:800;  margin-left:12px;}
+
+
+    .kpiPercent{font-weight: 900; color: #e81b28;   /* same primary color */}
+
+    #customerSummarySection table{width:100%;table-layout:fixed;}
+    #customerSummarySection th,
+    #customerSummarySection td{padding:10px;white-space:nowrap;}
+    #customerSummarySection th:nth-child(1),
+    #customerSummarySection td:nth-child(1){width:70%;overflow:hidden;
+      text-overflow:ellipsis;
+    }#customerSummarySection th:nth-child(2),
+    #customerSummarySection td:nth-child(2){width:30%;}
+
+
+    :root{
+      --bg:#eef4ff; --card:#ffffff; --primary:#1a73e8;
+      --text:#0f172a; --muted:#64748b; --border:#e5e7eb;
+      --shadow: 0 10px 25px rgba(0,0,0,.08); --radius: 14px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Arial;background:var(--bg);color:var(--text);}
+    .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+
+    .sidebar{background:#2f7d3e;color:#fff;padding:18px;position:sticky;top:0;height:100vh;}
+    .brand{display:flex;align-items:center;gap:10px;padding:10px 10px 18px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:14px;}
+    .logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#1a73e8,#2e7d32);display:flex;align-items:center;justify-content:center;font-weight:900;}
+    .brand h2{margin:0;font-size:16px;line-height:1.1}
+    .brand small{color:rgba(255,255,255,.7)}
+
+    .nav{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+    .nav button{border:none;background:rgba(255,255,255,.08);color:#fff;padding:12px;border-radius:12px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;font-size:14px;transition:.2s;}
+    .nav button:hover{background:rgba(255,255,255,.16)}
+    .nav button.active{background:rgba(14, 188, 52, 0.35);outline:1px solid rgba(26,115,232,.55);}
+    .nav button.is-disabled{opacity:.45;pointer-events:none;cursor:not-allowed;}
+
+    .sidebarFooter{position:absolute;left:18px;right:18px;bottom:18px;background:rgba(255,255,255,.08);border-radius:12px;padding:12px;font-size:13px;color:rgba(255,255,255,.85);}
+    .sidebarFooter b{color:#fff}
+
+    .donutGrid{margin-top:14px;display:grid;grid-template-columns: 1fr 1fr; gap:12px;}
+    .donutCard{background: var(--card);border: 1px solid var(--border);border-radius: var(--radius); box-shadow: var(--shadow); padding:16px;}
+    @media (max-width:1100px){ .donutGrid{ grid-template-columns: 1fr;} }
+
+    .main{padding:18px 18px 28px;}
+    .topbar{background:rgb(19, 76, 200);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;display:flex;gap:14px;justify-content:space-between;align-items:center;}
+    .topbar .title{display:flex;flex-direction:column;}
+    .topbar h1{margin:0;font-size:18px}
+    .topbar .sub{color:var(--muted);font-size:13px}
+    .userBox{display:flex;align-items:center;gap:12px;}
+    .pill{padding:8px 10px;border-radius:999px;background:#fcfff1;border:1px solid #dbe6ff;font-size:13px;}
+    .logout{background:#eb6a13;border:1px solid var(--border);padding:8px 12px;border-radius:10px;cursor:pointer;}
+
+    .cards{background-color:transparent; margin-top:14px; display:grid;grid-template-columns:repeat(4,1fr); gap:12px;}
+    .card{background:rgba(113, 238, 213, 0.698);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;}
+    .card .kpi{font-size:22px;font-weight:800}
+    .card .label{color:var(--muted);font-size:13px;}
+    .section{margin-top:14px;background:rgb(211, 235, 192);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:none;}
+    .section.active{display:block;}
+    .sectionHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+    .sectionHeader h2{margin:0;font-size:16px}
+    .sectionHeader small{color:rgb(20, 44, 226)}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+    label{font-size:15px;color:black;display:block;margin-bottom:8px}
+
+    input,select,textarea{width:100%;padding:10px;border:1px solid var(--border);background-color: #0c58c4;border-radius:12px;font-size:14px;outline:none;background:#fff;}
+    textarea{min-height:90px;resize:vertical;}
+    .actions{margin-top:12px;display:flex;gap:10px;justify-content:flex-end;}
+    .btn{border:none;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;}
+    .btn.primary{background:var(--primary);color:#f0e8e8;}
+    .btn.gray{background:#f1f5f9;border:1px solid var(--border);}
+
+    .tableWrap{overflow:auto;border:1px solid var(--border);border-radius:12px;}
+    table{width:max-content;border-collapse:collapse;font-size:13px;min-width:1600px;}
+    thead th{position:sticky;top:0;background:#0b2a55;color:#fff;padding:10px;text-align:left;white-space:nowrap;}
+    tbody td{border-top:1px solid var(--border);padding:10px;white-space:nowrap;}
+
+    thead th:nth-child(6),
+    tbody td:nth-child(6){
+      width:550px;
+      max-width:550px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .searchRow{
+     display:flex;
+     align-items:center;
+     gap:12px;
+     flex-wrap:nowrap;
+     overflow-x:auto;
+     white-space:nowrap;
+     -webkit-overflow-scrolling:touch;
+     margin-bottom:10px;
+    }
+    .searchRow input{
+      height:38px;
+      padding:0 14px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+      width:10cm;
+      min-width:0;
+      flex:0 0 auto;
+    }
+
+    .suggestBox{
+      position:absolute; display:none; background:#fff; border:1px solid #e5e7eb; border-radius:12px;
+      box-shadow:0 18px 40px rgba(0,0,0,.12); width:520px; max-width:100%; max-height:240px; overflow:auto;
+      z-index:9998; left:0; top:44px;
+    }
+    .suggestItem{padding:10px 12px;cursor:pointer;border-bottom:1px solid #f1f5f9;}
+    .suggestItem:hover{background:#f8fafc;}
+    .suggestItem.loading{cursor:default;color:var(--muted);font-weight:700;}
+
+    .report-toolbar{
+      display:flex;align-items:center; gap:20px; flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;
+      -webkit-overflow-scrolling:touch;
+    }
+    #customerSummarySection table th:nth-child(1),
+    #customerSummarySection table td:nth-child(1){
+      max-width: 350px;
+      width: 350px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #installUploadProgressContainer{display:none !important;}
+
+
+
+    .tb-search{height: 38px;padding: 0 14px;border: 1px solid var(--border);border-radius: 999px;font-size: 14px;outline: none;background: #fff;width:10cm; min-width: 0;}
+    .tb-date{height:38px;padding:0 12px;border:1px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:#fff;width:150px;min-width:150px;}
+    .tb-btn{
+      height:38px;
+      padding:0 12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+      cursor:pointer;
+      font-weight:700;
+      flex:0 0 auto;
+    }
+    .tb-export{background:#eaf2ff;border-color:#cfe0ff;}
+
+    /* Users table: Team column small */
+    #usercreateSection table th:nth-child(6),
+    #usercreateSection table td:nth-child(6){
+      width: 90px;
+      max-width: 90px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    #globalLoadingOverlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(15, 23, 42, .22);
+      backdrop-filter: blur(2px);
+      z-index: 99999;
+    }
+    .glBox{
+      background:#fff;
+      border:1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 180px;
+      justify-content:center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .glSpinner{
+      width:16px;height:16px;border-radius:50%;
+      border:2px solid rgba(26,115,232,.35);
+      border-top-color: var(--primary);
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media (max-width:1100px){
+      .cards{grid-template-columns:repeat(2,1fr)}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:800px){
+      .app{grid-template-columns:1fr}
+      .sidebar{height:auto;position:relative}
+      .cards{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
+      table{min-width:1200px}
+      .sidebarFooter{position:relative;left:0;right:0;bottom:0;margin-top:12px;}
+    }
+
+    .donutWrap{display:flex;align-items:center;gap:18px;justify-content:flex-start;}
+    .donutMeta{display:flex;flex-direction:column;gap:6px;min-width:220px;}
+    .donutCanvasBox{position:relative;width:160px;height:160px;}
+    .cssDonut{
+      width:160px;height:160px;border-radius:50%;
+      background: conic-gradient(#e5e7eb 0deg 360deg);
+      position:relative;
+    }
+    .cssDonut::after{
+      content:"";
+      position:absolute;
+      inset:26px;
+      background: var(--card);
+      border-radius:50%;
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+    .donutCenter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;}
+    .donutCenterBig{font-size:28px;font-weight:900;color:var(--text);line-height:1;}
+    .donutCenterSmall{font-size:12px;font-weight:700;color:var(--muted);margin-top:4px;}
+
+    .legendItem2{display:flex;align-items:center;gap:10px;margin:6px 0;}
+    .legendDot2{width:10px;height:10px;border-radius:999px;display:inline-block;}
+    .legendCount2{margin-left:auto;font-weight:900;color:var(--text);}
+
+    /* ===== User Create compact & centered ===== */
+    #usercreateSection{
+      max-width: 980px;
+      margin: 14px auto;
+      padding: 14px;
+    }
+    #usercreateSection h2{
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    #usercreateSection form.card{
+      padding: 12px;
+      gap: 8px !important;
+      grid-template-columns: 1.2fr 1fr;
+    }
+    #usercreateSection input,
+    #usercreateSection select{
+      padding: 8px 10px;
+      height: 38px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+    #usercreateSection button[type="submit"]{
+      padding: 9px 12px !important;
+      border-radius: 10px !important;
+      font-size: 13px;
+    }
+    #usercreateSection table{
+      width: 100%;
+      min-width: 900px;
+    }
+    #usercreateSection .userTableWrap{
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="globalLoadingOverlay">
+    <div class="glBox">
+      <span class="glSpinner"></span>
+      <span id="globalLoadingText">Loading...</span>
+    </div>
+  </div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">KGK</div>
+        <div>   
+          <div class="logo-box">
+            <img id="kgkLogo"
+            alt="KGKJET"
+            src="data:image/png;base64,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";
+            style="width:180px; height:auto;">
+          </div>   
+          
+          <small>Service ERP</small>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button id="btnDashboard" class="active" data-roles="Sales Cordinator,Admin,Manager,Team Leader,User"
+                onclick="showSection('dashboardSection', this)">🏠 Dashboard</button>
+
+        <button id="btnWsr" data-roles="Manager,Team Leader,User"
+                onclick="showSection('wsrSection', this)">📚 WSR Report</button>
+
+        <button id="btnReport" data-roles="Admin,Manager,Team Leader,User,Sales Cordinator"
+                onclick="showSection('reportSection', this); loadReport();">📋 Report View</button>
+
+        <button id="btnWeeklyPlan" data-roles="Manager,Team Leader,User"
+                onclick="showSection('weeklyPlanSection', this);">📅 Weekly Plan</button>
+
+        <button id="btnWeeklyPlanView" data-roles="Admin,Manager,Team Leader,User,Sales Cordinator"
+                onclick="showSection('weeklyViewPlanSection', this); loadWeeklyPlanReport();">📊 Weekly Plan Report</button>
+
+        <button id="btnMasterUpdate" data-roles="Admin,Manager,Team Leader" type="button"
+                onclick="window.open('/installbase/update','_blank','noopener');">📝 Master Installbase Update</button>
+
+        <button id="btnBreakdown" data-roles="Admin,Manager,Team Leader,User"
+                onclick="showSection('breakdownSection', this);">🛠 Breakdown Login</button>
+
+        <button id="btnupload" data-roles="Admin,Manager,Team Leader,User"
+                onclick=openFilePicker()>👤 SMS ID Sheet Upload </button>
+
+        
+        <button id="btnusercreate" data-roles="Admin"
+                onclick="openUserCreate(this)">👤 User Create</button>
+
+        <button id="btnInstallUpload"
+          data-roles="User,admin,team leader,manager,Sales Cordinator"
+          onclick="openInstallFilePicker()">
+          📤 Master InstallBase Sheet Upload
+        </button>
+        <input type="file"
+          id="installExcelFileInput"
+          accept=".xlsx"
+          style="display:none"
+          onchange="uploadInstallExcel(this)">  
+        </div>
+
+        <div id="installUploadProgressBox" style="display:none; margin-top:8px;">
+          <div style="width:100%; background:#e5e7eb; border-radius:8px; overflow:hidden;">
+            <div id="installUploadProgressBar"
+            style="width:0%; height:18px; background:#1a73e8; text-align:center; color:white; font-size:12px;">
+            0%
+          </div>
+        </div>    
+        <div id="SMSUploadProgressBox" style="display:none; margin-top:8px;">
+          <div style="width:100%; background:#e5e7eb; border-radius:8px; overflow:hidden;">
+            <div id="SMSUploadProgressBar"
+            style="width:0%; height:18px; background:#1a73e8; text-align:center; color:white; font-size:12px;">
+            0%
+          </div>
+        </div>    
+
+     
+        <input type="file" id="excelFileInput" accept=".xlsx"
+        style="display:none"
+        onchange="uploadExcel(this)">   
+                
+      </div>
+
+      <div class="sidebarFooter">
+        <div><b id="sbEngineer">Engineer</b></div>
+        <div>Team: <span id="sbZone">-</span></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="title">
+          <h1>Service Dashboard</h1>
+          <div class="sub">KGK SERVICE TEAM LOGIN ERP</div>
+        </div>
+
+        <div class="userBox">
+          <div class="pill">👤 <b id="engName">-</b></div>
+          <div class="pill">📍 Zone: <b id="zoneName">-</b></div>
+          <button class="logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <section id="dashboardSection" class="section active">
+        <div class="sectionHeader">
+          <h2>Overview</h2>
+          <small>Welcome to KGK Service Team</small>
+        </div>
+
+        <div style="color:var(--muted); line-height:1.6">
+          <div class="cards">
+             <div class="card" style="cursor:pointer;"
+              onclick="openActiveStatusDetails('ALL')">
+             
+             
+             <div class="kpi" id="installBaseLabel">Total InstallBase- 0</div>
+             <div class="subInfo" id="kpiInstallSub"></div>
+            </div>
+            <div class="card" style="cursor:pointer;"
+              onclick="showSection('clusterSummarySection', null); loadClusterSummary();">
+              <div class="label" style="font-weight:600; margin-bottom:8px;">
+                This Month Cluster
+              </div>
+              <div style="font-size:16px; color:#dc3545;">
+                Pending : <span id="kpiPending">0</span>
+              </div>
+              <div style="font-size:16px; color:#28a745;">
+                Completed : <span id="kpiCompleted">0</span>
+              </div>
+            </div>
+          
+            <div class="card">
+              <div class="kpi" id="kpiPending">0</div>
+              <div class="label">Breakdown Task Pending</div>
+            </div>
+            <div class="card" style="cursor:pointer;"
+            onclick="openCustomerReport()">
+            <div class="kpi" id="kpiCustomers">—</div>
+            <div class="label">Total Customers</div>
+          </div>
+          </div>             
+        
+          <div class="donutGrid">
+            <!-- Weekly Plan Donut -->
+            <div class="donutWrap donutCard">
+              <div class="donutCanvasBox">
+                <div id="weeklyDonutChart" class="cssDonut"></div>
+                <div class="donutCenter">
+                  <div class="donutCenterBig" id="donutTotal">0</div>
+                  <div class="donutCenterSmall">Total</div>
+                </div>
+              </div>
+              <div class="donutMeta">
+                <div class="kpi" id="kpiWeekly14"></div>
+                <div class="label">Planned ±7 Days</div>
+                <div id="donutLegend" style="margin-top:10px;"></div>
+              </div>
+            </div>
+
+            <!-- WSR Donut -->
+            <div class="donutWrap donutCard">
+              <div class="donutCanvasBox">
+                <div id="wsrDonutChart" class="cssDonut"></div>
+                <div class="donutCenter">
+                  <div class="donutCenterBig" id="wsrDonutTotal">0</div>
+                  <div class="donutCenterSmall">Total</div>
+                </div>
+              </div>
+              <div class="donutMeta">
+                <div class="kpi" id="kpiWsrMonth"></div>
+                <div class="label">WSR Reports (Current Month)</div>
+                <div id="wsrDonutLegend" style="margin-top:10px;"></div>
+              </div>              
+            </div>
+          </div>
+          <!-- ===== SECOND ROW (FULL WIDTH AMC DONUT) ===== -->
+           <div class="donutWrap donutCard" style="margin-top:14px;">
+            <div class="donutCanvasBox">
+              <div id="amcDonutChart" class="cssDonut"></div>
+              <div class="donutCenter">
+                <div class="donutCenterBig" id="amcDonutTotal">0</div>
+                <div class="donutCenterSmall">Total</div>
+              </div>
+            </div>
+            <div class="donutMeta">
+              <div class="kpi" id="kpiAmcTotal"></div>
+              <div class="label">InstallBase Machine Status</div>
+              <div id="amcDonutLegend" style="margin-top:10px;"></div>
+            </div>
+          </div>
+          <!-- ================= Expiry Filter Section ================= -->
+           <div style="margin:25px 0;">
+            <button onclick="loadExpiry('sms_15', this)" class="filter-btn">
+              SMS (0-15 Days)
+            </button>
+            <button onclick="loadExpiry('amc_60', this)" class="filter-btn">
+              AMC (Next 60 Days)
+            </button>
+            <button onclick="loadExpiry('filter_60', this)" class="filter-btn">
+              Filter (Next 60 Days)
+            </button>
+          </div>
+          <div id="expiryTableContainer"></div>
+          <!-- ========================================================= -->
+        </div>
+
+      </section>
+
+      <section id="clusterSummarySection" class="section">
+        <div class="sectionHeader">
+          <h2>Cluster Summary (This Month)</h2>
+          <small>Rows: <b id="clusterRowCount">0</b></small>
+        </div>
+        
+        <div class="tableWrap">
+          <table id="clusterSummaryTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MASTER -->
+      <section id="masterSection" class="section">
+        <div class="sectionHeader">
+          <h2>Master InstallBase</h2>
+          <small id="masterHint">—</small>
+        </div>
+
+        <div style="position:relative; margin:0 0 10px;">
+          <div class="searchRow">
+            <input id="masterSearch" placeholder="Search (Customer / Serial / Engineer / Zone...)" autocomplete="off">
+            <button class="btn gray" onclick="masterDoSearch()">🔎 Search</button>
+            <button class="btn gray" onclick="masterClear()">✖ Clear</button>
+            <button class="btn gray" onclick="openMaster()">🔄 Refresh</button>
+            <button class="btn gray" type="button" onclick="exportMaster()">⬇️Excel Export</button>
+          </div>
+          <div id="masterSuggest" class="suggestBox"></div>
+          <div id="masterErr" class="err"></div>
+        </div>
+
+        <div id="masterTable"></div>
+      </section>
+      <section id="mcStatusSection" class="section">
+        <div class="card">
+          <h3 id="mcStatusTitle">Machine Status Details</h3>
+          <div id="mcStatusTable"></div>
+          <button class="btn gray" onclick="showSection('dashboardSection', document.getElementById('btnDashboard'))">
+            ⬅ Back to Dashboard
+          </button>
+        </div>
+      </section>
+      
+
+
+       <!-- Customer List -->
+      <section id="customerSummarySection" class="section">
+        <div class="sectionHeader">
+          <h2>Customer Summary</h2>
+          <small>Total Unique Customers: 
+            <b id="customerSummaryCount">0</b>
+          </small>
+        </div>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody id="customerSummaryBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- WEEKLY PLAN FORM -->
+      <section id="weeklyPlanSection" class="section">
+        <div class="sectionHeader">
+          <h2>Weekly Plan</h2>
+          <small>Add weekly service planning</small>
+        </div>
+
+        <form id="weeklyPlanForm">
+          <div class="grid">
+            <div><label>Zone</label><input id="wp_zone" name="zone" readonly></div>
+            <div><label>Engineer Name</label><input id="wp_engineer" name="engineerName" readonly></div>
+            <div><label>Cluster Code</label><input id="wp_clusterCode" name="clusterCode"></div>
+            <div><label>Planning Date</label><input type="date" name="visit_date" required></div>
+
+            <div style="position:relative;">
+              <label>Customer Name</label>
+              <input id="wpCustomer" name="customerName" autocomplete="off">
+              <div id="wpCustomerSuggest" class="suggestBox" style="top:calc(100% + 6px); width:100%;"></div>
+            </div>
+
+            <div style="position:relative;">
+              <label>Location</label>
+              <input id="wp_location" name="location" autocomplete="off">
+              <div id="wpLocationSuggest" class="suggestBox" style="top:calc(100% + 6px); width:100%;"></div>
+            </div>
+
+            <div><label>Contact Person Name</label><input id="wp_contactPerson" name="contact_person_name"></div>
+            <div><label>Phone Number</label><input id="wp_phoneNumber" name="phoneNumber"></div>
+            <div><label>E-mail id</label><input id="wp_email" name="email"></div>
+
+            <div>
+              <label>Local / Outstation</label>
+              <select name="localOutstation">
+                <option value="">--Select--</option>
+                <option value="Local">N/A</option>
+                <option value="Local">Local</option>
+                <option value="Outstation">Outstation</option>
+              </select>
+            </div>
+
+            <div><label>Distance from Base / Last Customer (KM)</label> <input type="number" id="distanceKM" name="distance_km"></div>
+
+            <div>
+              <label>Mode of Transport</label>
+              <select name="mode_of_transport" id="modeOfTransport" onchange="handleTransportChange()">
+                <option value="">--Select--</option>
+                <option>N/A</option><option>Bike</option><option>Auto</option><option>Car</option><option>Bus</option><option>Train</option><option>Flight</option>
+              </select>
+            </div>
+            <div id="bikeExtraBox" style="display:none; margin-top:10px;">
+              <label> Per KM Rate</label>
+              <input type="number" id="perKmRate" placeholder="Enter Per KM Rate" oninput="calculateExpense()">
+            </div>
+
+            <div><label>Expected Expense (Travel + Lodging)</label><input type="number" id="expectedExpense" name="expectedExpense"></div>
+
+            <div style="position:relative;">
+              <label>Printer Model</label>
+              <input id="wp_printerModel" name="printerModel" autocomplete="off">
+              <div id="wpModelSuggest" class="suggestBox" style="top:calc(100% + 6px); width:100%;"></div>
+            </div>
+
+            <div style="position:relative;">
+              <label>Printer SR. No.</label>
+              <input id="wp_serialNo" name="printer_sr_no" autocomplete="off">
+              <div id="wpSerialSuggest" class="suggestBox" style="top:calc(100% + 6px); width:100%;"></div>
+            </div>
+
+            <div><label>Printer Status</label><input id="wp_printerStatus" name="printerStatus"></div>
+
+            <div>
+              <label>Visit Type</label>
+              <select name="visitType" required>
+                <option value="">--Select--</option>
+                <option>N/A</option><option>Cluster</option><option>Breakdown</option><option>Sales Support</option><option>Other</option>
+              </select>
+            </div>
+
+            <div><label>Last Visit Date</label><input type="date" name="lastVisitDate"></div>
+
+            <div><label>Last TOT</label><input id="wp_tot" name="tot"></div>
+            <div><label>Last POT</label><input id="wp_pot" name="pot"></div>
+            <div><label>INK</label><input id="wp_ink" name="ink"></div>
+            <div><label>Solvent</label><input id="wp_solvent" name="solvent"></div>
+            <div><label>CNC</label><input id="wp_cnc" name="cnc"></div>
+
+
+            <div><label>AMC Due Date</label><input type="date" name="amcDueDate" id="wp_amcDueDate"></div>
+            <div><label>Filter Due Date / Hrs</label><input type="date" name="filter_due_date_hrs" id="wp_filterDue"></div>
+
+            <div><label>SMS Expiry Date</label><input type="date" name="sms_expiry_date" id="wp_smsExpiry"></div>
+
+            <div><label>Outstanding Amount</label><input name="outstandingAmount"></div>
+
+            <div><label>Filter Change</label>
+              <select name="filterChange"><option value="">--Select--</option><option>YES</option><option>NO</option></select>
+            </div>
+            <div><label>SMS Update</label>
+              <select name="smsUpdate"><option value="">--Select--</option><option>YES</option><option>NO</option></select>
+            </div>
+            <div><label>Payment Collected</label>
+              <select name="paymentCollected"><option value="">--Select--</option><option>YES</option><option>NO</option></select>
+            </div>
+
+            <div><label>Ink Expiry Follow-up</label>
+              <select name="inkexpiryfollowup"><option value="">--Select--</option><option>YES</option><option>NO</option></select>
+            </div>
+            <div><label>AMC Follow-up</label>
+              <select name="amcFollowup"><option value="">--Select--</option><option>YES</option><option>NO</option></select>
+            </div>
+            <div><label>Filter Kit Follow-up</label>
+              <select name="filterKitFollowup"><option value="">--Select--</option><option>YES</option><option>NO</option></select>
+            </div>
+
+            <div><label>Stock Check</label>
+              <select name="stockCheck"><option value="">--Select--</option><option>YES</option><option>NO</option></select>
+            </div>
+
+            <div><label>Other</label><input name="other"></div>
+            <div><label>Visit Complete Date</label><input type="date" name="visitCompleteDate"></div>
+
+            <div>
+              <label>Remarks</label>
+              <textarea name="remarks"></textarea>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn gray" onclick="clearWeeklyPlanForm()">Clear</button>
+
+            <button type="submit" class="btn primary">Save Weekly Plan</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- WSR -->
+      <section id="wsrSection" class="section">
+        <div class="sectionHeader">
+          <h2>WSR Report Form</h2>
+          <small>Submit service activity</small>
+        </div>
+
+        <form id="wsrForm">
+          <div class="grid">
+            <div><label>Zone</label><input id="wsr_zone" name="zone" readonly></div>
+            <div><label>Engineer Name</label><input id="wsr_engineer" name="engineerName" readonly></div>
+
+            <div>
+              <label>MMM-YY (Month/Year)</label>
+              <input type="month" id="monthYearPick" required>
+              <input type="hidden" name="monthYear" id="monthYearText">
+            </div>
+
+            <div><label>Service Report Number</label><input name="serviceReportNo"></div>
+
+            <div style="position:relative;">
+              <label>Customer Name</label>
+              <input id="wsrCustomer" name="customerName" autocomplete="off">
+              <div id="customerSuggest" class="suggestBox" style="top:calc(100% + 6px); width:100%;"></div>
+            </div>
+
+            <div style="position:relative;">
+              <label>Location</label>
+              <input id="wsr_location" name="location" autocomplete="off">
+              <div id="wsrLocationSuggest" class="suggestBox" style="top:calc(100% + 6px); width:100%;"></div>
+            </div>
+
+            <div><label>Contact Person Name</label><input id="wsr_contactPerson" name="contactPerson"></div>
+            <div><label>Designation</label><input id="wsr_designation" name="designation"></div>
+            <div><label>Contact Number</label><input id="wsr_contactNumber" name="contactNumber"></div>
+            <div><label>E-mail id</label><input id="wsr_email" name="email"></div>
+
+            <div><label>Call Logged Date</label><input type="date" name="callLoggedDate"></div>
+            <div><label>Problem reported</label><input name="problemReported"></div>
+
+            <div>  <label>Machine Status</label>  <input id="wsr_machineStatus" name="machineStatus"></div>
+
+
+
+            <div>
+              <label>Visit Code 1</label>
+              <select id="visitCode1" name="visitCode1" required>
+                <option value="">--Select--</option>
+                <option value="NA">NA</option>
+                <option value="CLUSTER">CLUSTER</option>
+                <option value="INSTALLATION">INSTALLATION</option>
+                <option value="BREAKDOWN">BREAKDOWN</option>
+                <option value="SALES SUPPORTS">SALES SUPPORTS</option>
+                <option value="TRAINING">TRAINING </option>
+                <option value="SPECIAL_APPLICATION">SPECIAL_APPLICATION </option>
+                <option value="REFURBISHMENT">REFURBISHMENT </option>
+                <option value="OTHERS-VISIT">OTHERS-VISIT </option>
+
+              </select>
+              <div id="smsDaysBox" style="display:none;">
+                <label>SMS Updated Days</label>
+                <input type="number" id="smsUpdatedDays" name="smsUpdatedDays" min="1">
+              </div>
+            </div>
+
+            <div>
+              <label>Visit Code 2</label>
+              <select id="visitCode2" name="visitCode2" required>
+                <option value="">--Select--</option>
+              </select>
+            </div>
+
+            <div style="position:relative;">
+              <label>Printer Model</label>
+              <input id="wsr_printerModel" name="printerModel" autocomplete="off">
+              <div id="wsrModelSuggest" class="suggestBox" style="top:calc(100% + 6px); width:100%;"></div>
+            </div>
+
+            <div><label>M/C No</label><input id="wsr_mcNo" name="mcNo"></div>
+
+            <div style="position:relative;">
+              <label>Serial No</label>
+              <input id="wsr_serialNo" name="serialNo" autocomplete="off">
+              <div id="wsrSerialSuggest" class="suggestBox" style="top:calc(100% + 6px); width:100%;"></div>
+            </div>
+
+            <div><label>Ink Type</label><input id="wsr_inkType" name="inkType"></div>
+
+            <div><label>Turn on Time</label><input name="turnOnTime"></div>
+            <div><label>Print on Time</label><input name="printOnTime"></div>
+
+            <div><label>Visit Date</label><input type="date" name="visitDate" required></div>
+
+            <div><label>Travel Start (HH:MM)</label><input type="time" id="travelStart" name="travelStart"></div>
+            <div><label>Travel End (HH:MM)</label><input type="time" id="travelEnd" name="travelEnd"></div>
+            <div><label>TRAVEL TIME</label><input id="travelTime" name="travelTime" readonly></div>
+
+            <div><label>Work Start (HH:MM)</label><input type="time" id="workStart" name="workStart"></div>
+            <div><label>Work End (HH:MM)</label><input type="time" id="workEnd" name="workEnd"></div>
+            <div><label>WORK TIME</label><input id="workTime" name="workTime" readonly></div>
+
+            <div><label>Action Taken (in brief)</label><textarea name="actionTaken"></textarea></div>
+            <div><label>Customer Feedback</label><textarea name="customerFeedback"></textarea></div>
+
+            <div><label>Call Status </label>
+              <select name="callStatus">
+                <option value="">--Select--</option>
+                <option value="OPEN">OPEN</option>
+                <option value="CLOSED">CLOSED</option>
+              </select>
+            </div>
+
+            <div><label>INK</label><input name="ink"></div>
+            <div><label>Solvent</label><input name="solvent"></div>
+            <div><label>CNC</label><input name="cnc"></div>
+
+            <div><label>Filter Kit Due Date/Hrs</label><input id="wsr_filterKitDue" name="filterKitDue"></div>
+
+            <div><label>Re-visit Required</label>
+              <select name="revisitRequired">
+                <option value="">--Select--</option>
+                <option value="YES">YES</option>
+                <option value="NO">NO</option>
+              </select>
+            </div>
+            <div><label>Service Engineer Remarks</label><textarea name="serviceEngineerRemarks"></textarea></div>
+            <div><label>Service Manager Remarks</label><textarea name="serviceManagerRemarks"></textarea></div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn gray" onclick="clearWsrForm()"> Clear</button>
+
+
+            <button type="submit" class="btn primary">Submit WSR</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- REPORT VIEW -->
+      <section id="reportSection" class="section">
+        <div class="sectionHeader">
+          <h2>Report View</h2>
+          <small> WSR Total • Rows: <b id="reportRowCount">0</b></small>
+        </div>
+        <div class="report-toolbar">
+          <input id="reportSearch" class="tb-search" placeholder="Search report (customer / MMM-YY / engineer / zone...)" autocomplete="off">
+          <label>From</label><input type="date" class="tb-date" id="fromDate">
+          <label>To</label><input type="date" class="tb-date" id="toDate">
+          <button class="tb-btn" onclick="reportDoSearch()">🔎 Search</button>
+          <button class="tb-btn" onclick="reportClear()">✖ Clear</button>
+          <button class="tb-btn" onclick="loadReport()">🔄 Refresh</button>
+          <button class="tb-btn tb-export" onclick="exportReport()">⬇️Report Export</button>
+          
+        </div>
+        <div id="reportSuggest" class="suggestBox"></div>
+        <div id="reportErr" class="err"></div>
+        <div id="reportWrap" class="tableWrap">
+          <table id="dataTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- BREAKDOWN -->
+      <section id="breakdownSection" class="section">
+        <div class="sectionHeader">
+          <h2>Breakdown Login</h2>
+          <small>Coming soon</small>
+        </div>
+        <div style="color:var(--muted); line-height:1.6">
+          ✅ Breakdown module will be added here.
+        </div>
+      </section>
+
+      <!-- WEEKLY PLAN REPORT -->
+      <section id="weeklyViewPlanSection" class="section">
+        <div class="sectionHeader">
+          <h2>Weekly Plan Report</h2>
+          <small>Weekly Plan • Rows: <b id="wpRowCount">0</b></small>
+        </div>
+        <div class="report-toolbar">
+          <input id="wpReportSearch" class="tb-search" placeholder="Search weekly plan (customer / engineer / zone / serial / location...)" autocomplete="off">
+          <label>From</label><input type="date" class="tb-date" id="wpFromDate">
+          <label>To</label><input type="date" class="tb-date" id="wpToDate">
+          <button class="tb-btn" onclick="wpReportDoSearch()">🔎 Search</button>
+          <button class="tb-btn" onclick="wpReportClear()">✖ Clear</button>
+          <button class="tb-btn" onclick="loadWeeklyPlanReport()">🔄 Refresh</button>
+          <button class="tb-btn tb-export" onclick="exportWeeklyPlanReport()">⬇️Export</button>
+        </div>
+        <div id="wpReportErr" class="err"></div>
+        <div id="wpReportWrap" class="tableWrap">
+          <table id="wpReportTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- USER CREATE -->
+      <section id="usercreateSection" class="section">
+        <h2>User Create</h2>
+
+        <form onsubmit="createUser(event)" class="card" style="display:grid;gap:10px;grid-template-columns:repeat(2,1fr);">
+          <input id="cuUsername" placeholder="Username" required>
+          <input id="cuFullName" placeholder="Full Name" required>
+
+          <select id="cuZone" required>
+            <option value="EAST">EAST</option>
+            <option value="WEST">WEST</option>
+            <option value="NORTH">NORTH</option>
+            <option value="SOUTH">SOUTH</option>
+          </select>
+
+          <select id="cuRole" required>
+            <option value="User">User</option>
+            <option value="Team Leader">Team Leader</option>
+            <option value="Manager">Manager</option>
+            <option value="Admin">Admin</option>
+          </select>
+
+          <input id="cuTeam" placeholder="Team (E3/All/B1 etc)" required>
+          <input id="cuPassword" placeholder="Password" type="password" required>
+
+          <button type="submit" style="grid-column:1/-1;padding:10px;border-radius:12px;border:1px solid var(--border);font-weight:800;cursor:pointer;">
+            Create User
+          </button>
+        </form>
+
+        <h3 style="margin-top:18px;">Users List</h3>
+        <div class="userTableWrap">
+          <table border="1" width="100%">
+            <thead>
+              <tr>
+                <th>UserId</th><th>Username</th><th>FullName</th><th>Zone</th>
+                <th>Role</th><th>Team</th><th>Active</th><th>CreatedAt</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+/* ===========================
+   SERVER VARIABLESS
+=========================== */
+const SERVER_ENGINEER = "{{ engineer|e }}";
+const SERVER_ZONE = "{{ zone|e }}";
+const SERVER_ROLENAME = "{{ role|e }}";
+const SERVER_TEAM = "{{ team|e }}";
+
+/* ===========================
+   LOADING OVERLAY
+=========================== */
+const _gOverlay = document.getElementById("globalLoadingOverlay");
+const _gText = document.getElementById("globalLoadingText");
+let _loadingCount = 0;
+function showLoading(msg="Loading..."){
+  _loadingCount++;
+  _gText.textContent = msg || "Loading...";
+  _gOverlay.style.display = "flex";
+}
+function hideLoading(){
+  _loadingCount = Math.max(0, _loadingCount - 1);
+  if(_loadingCount === 0){
+    _gOverlay.style.display = "none";
+    _gText.textContent = "Loading...";
+  }
+}
+
+
+
+/* ===========================
+   UTILITIES
+=========================== */
+function escapeHtml(v){
+  if (v === null || v === undefined) return "";
+  return String(v)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function uniq(arr){
+  return [...new Set((arr || []).filter(Boolean).map(x => String(x).trim()).filter(Boolean))];
+}
+function normVal(v){
+  return String(v ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+function normKey(k){
+  return String(k||"")
+    .toLowerCase()
+    .replace(/\./g,"")
+    .replace(/\s+/g,"")
+    .replace(/_/g,"")
+    .replace(/-/g,"");
+}
+function getFieldExactOrNorm(row, keys){
+  if(!row) return "";
+  for(const k of keys){
+    if(row[k] !== undefined && row[k] !== null && String(row[k]).trim() !== "") return row[k];
+  }
+  const map = {};
+  Object.keys(row).forEach(k => map[normKey(k)] = k);
+  for(const k of keys){
+    const nk = normKey(k);
+    if(map[nk]){
+      const v = row[map[nk]];
+      if(v !== undefined && v !== null && String(v).trim() !== "") return v;
+    }
+  }
+  return "";
+}
+function getFieldContains(row, patterns){
+  if(!row) return "";
+  const keys = Object.keys(row || {});
+  const normMap = keys.map(k => ({ k, nk: normKey(k) }));
+  for(const p of patterns){
+    const np = normKey(p);
+    const hit = normMap.find(x => x.nk.includes(np));
+    if(hit){
+      const v = row[hit.k];
+      if(v !== undefined && v !== null && String(v).trim() !== "") return v;
+    }
+  }
+  return "";
+}
+function getField(row, keys, containsPatterns){
+  return getFieldExactOrNorm(row, keys || []) || getFieldContains(row, containsPatterns || []) || "";
+}
+function getLocationFromRow(r){ return getField(r, ["LOCATION","Location","location"], ["location"]); }
+function getModelFromRow(r){ return getField(r, ["Model","MODEL","model"], ["model"]); }
+function getSerialFromRow(r){
+  return getField(r,
+    ["Serial No.","Serial No","SERIAL NO.","Serial","serialNo","serial_no","srNo","sr_no"],
+    ["serial","srno","serialno"]
+  );
+}
+
+/* ===========================
+   NAV / ROLE / SECTION
+=========================== */
+function applyRoleAccess(role){
+  const userRole = (role || "").trim().toLowerCase();
+  const HIDE_UNAUTHORIZED = true;
+  document.querySelectorAll("[data-roles]").forEach(btn=>{
+    const allowedRoles = (btn.getAttribute("data-roles") || "")
+      .split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
+    const allowed = allowedRoles.includes(userRole);
+    if (allowed){
+      btn.style.display = "";
+      btn.classList.remove("is-disabled");
+      btn.disabled = false;
+    } else {
+      if (HIDE_UNAUTHORIZED){ btn.style.display = "none"; }
+      else { btn.classList.add("is-disabled"); btn.disabled = true; }
+    }
+  });
+}
+
+/* ✅ UPDATED: showSection (logic same + autosuggest ensure) */
+function showSection(id, btn){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.add("active");
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+
+  // ✅ autosuggest attach when switching sections
+  ensureSuggestReady();
+  setupAutoTimeCalc();
+
+}
+
+function logout(){ window.location.href = "/logout"; }
+function refillReadonly(){
+  const e1 = document.getElementById("wsr_engineer");
+  const z1 = document.getElementById("wsr_zone");
+  const e2 = document.getElementById("wp_engineer");
+  const z2 = document.getElementById("wp_zone");
+  if (e1) e1.value = SERVER_ENGINEER || "";
+  if (z1) z1.value = SERVER_ZONE || "";
+  if (e2) e2.value = SERVER_ENGINEER || "";
+  if (z2) z2.value = SERVER_ZONE || "";
+}
+
+/* ===========================
+   MONTH YEAR (WSR)
+=========================== */
+function formatMMMYY(yyyy_mm){
+  if (!yyyy_mm) return "";
+  const [y,m] = yyyy_mm.split("-");
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  const mon = months[(parseInt(m,10)||1)-1] || "JAN";
+  const yy = String(y).slice(-2);
+  return `${mon}-${yy}`;
+}
+function setupMonthYear(){
+  const pick = document.getElementById("monthYearPick");
+  const out  = document.getElementById("monthYearText");
+  if (!pick || !out) return;
+
+  const d = new Date();
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const yy = d.getFullYear();
+  pick.value = `${yy}-${mm}`;
+  out.value = formatMMMYY(pick.value);
+
+  pick.addEventListener("change", ()=> out.value = formatMMMYY(pick.value));
+}
+
+function populateEngineerFilter(data) {
+  const select = document.getElementById("engineerFilter");
+  const engineers = [...new Set(data.map(r => r.engineer))];
+
+  engineers.forEach(e => {
+    const opt = document.createElement("option");
+    opt.value = e;
+    opt.textContent = e;
+    select.appendChild(opt);
+  });
+}
+
+async function loadClusterSummary() {
+
+  showLoading("Loading Cluster Summary...");
+  if ($.fn.DataTable.isDataTable('#clusterSummaryTable')) {
+    $('#clusterSummaryTable').DataTable().clear().destroy();
+  }
+
+  try {
+
+    const res = await fetch("/api/installbase/month-cluster-details");
+    const data = await res.json();
+
+    const table = document.getElementById("clusterSummaryTable");
+    const thead = table.querySelector("thead");
+    const tbody = table.querySelector("tbody");
+
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    if (!data.columns || !data.rows) return;
+
+    // ======================
+    // HEADER
+    // ======================
+    const trHead = document.createElement("tr");
+    data.columns.forEach(col => {
+      const th = document.createElement("th");
+      th.textContent = col;
+      trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+
+    // ======================
+    // BODY
+    // ======================
+    data.rows.forEach(r => {
+      const tr = document.createElement("tr");
+      data.columns.forEach(c => {
+        const td = document.createElement("td");
+        const value = r[c] ?? "";
+        const colName = c.toLowerCase();// ✅ STATUS COLOR LOGIC
+
+        if(colName.includes("status")){
+          const span = document.createElement("span");
+          span.textContent = value;
+          const v = String(value).toLowerCase();
+          if(v === "completed"){
+            span.className = "status-completed";
+          }
+          else if(v === "pending"){
+            span.className = "status-pending";
+          }
+          td.appendChild(span);
+        }else{
+          td.textContent = value;
+        }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    // ======================
+    // ROW COUNT
+    // ======================
+    const rc = document.getElementById("clusterRowCount");
+    if (rc) rc.textContent = data.rows.length;
+    initCommonDataTable("clusterSummaryTable");
+    
+
+    // ======================
+    // 🔥 AUTO ENGINEER LOAD (TABLE SE DIRECT)
+    // ======================
+
+    const engineerSet = new Set();
+
+    const headerCells = table.querySelectorAll("thead th");
+
+    let engineerIndex = -1;
+
+    headerCells.forEach((th, i) => {
+      if (th.textContent.trim().toLowerCase().includes("engineer")) {
+        engineerIndex = i;
+      }
+    });
+
+    if (engineerIndex !== -1) {
+
+      const rows = table.querySelectorAll("tbody tr");
+
+      rows.forEach(row => {
+        const eng = row.children[engineerIndex]?.textContent.trim();
+        if (eng) engineerSet.add(eng);
+      });
+    }
+
+    const select = document.getElementById("engineerFilter");
+
+    if (select) {
+      select.innerHTML = `<option value="">All Engineers</option>`;
+
+      [...engineerSet].sort().forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e;
+        opt.textContent = e;
+        select.appendChild(opt);
+      });
+    }
+
+  } catch (err) {
+    console.error("Cluster summary error:", err);
+  } finally {
+    hideLoading();
+  }
+}
+/* ===========================
+   KPI
+=========================== */
+function loadKpis(){
+  showLoading("Loading KPI...");
+
+  fetch("/api/kpi")
+    .then(r => r.json())
+    .then(k => {
+
+      if (k.error) return;
+
+      const total   = Number(k.installbase_total ?? 0);
+      const active  = Number(k.active_total ?? 0);
+      const inactive= Number(k.inactive_total ?? 0);
+      const dead    = Number(k.dead_total ?? 0);
+
+      // InstallBase
+      const lbl = document.getElementById("installBaseLabel");
+      if(lbl){
+        lbl.textContent = `Installase  -   ${total}`;
+      }
+
+      const sub = document.getElementById("kpiInstallSub");
+      if(sub){
+        sub.innerHTML = `
+        <div style="display:flex;justify-content:space-between;margin-top:4px;cursor:pointer;"
+        onclick="openActiveStatusDetails('ACTIVE')">
+        <span>Active</span>
+        <span class="activeCount">${active}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;cursor:pointer;"
+        onclick="openActiveStatusDetails('INACTIVE')">
+        <span>Inactive</span>
+        <span class="inactiveCount">${inactive}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;cursor:pointer;"
+        onclick="openActiveStatusDetails('DEAD')">
+        <span>Dead</span>
+        <span class="deadCount">${dead}</span>
+        </div>
+        `;
+      }
+
+      // Customers
+      document.getElementById("kpiCustomers").textContent = k.customers ?? 0;
+
+      // Pending
+      document.getElementById("kpiPending").textContent = k.pending ?? 0;
+
+     
+
+    })
+    .catch(err => console.error("KPI error:", err))
+    .finally(()=> hideLoading());
+}
+
+function loadClusterKpi(){
+
+  fetch("/api/installbase/month-cluster-summary")
+    .then(r => r.json())
+    .then(cs => {
+
+      const pending = Number(cs.total ?? 0);
+      const completed = Number(cs.completed ?? 0);
+      
+      const pendingEl = document.getElementById("kpiPending");
+      const completedEl = document.getElementById("kpiCompleted");
+
+      if(pendingEl) pendingEl.textContent = pending;
+      if(completedEl) completedEl.textContent = completed;
+
+    })
+    .catch(err => {
+      console.error("Cluster KPI error:", err);
+    });
+}
+
+/* ===========================
+   USERS (SECURE: NO PASSWORD COLUMN)
+=========================== */
+async function loadUsers(){
+  const tbody = document.querySelector("#usersTableBody");
+  tbody.innerHTML = `<tr><td colspan="9">Loading...</td></tr>`;
+  const res = await fetch("/api/users");
+  const data = await res.json();
+  tbody.innerHTML = "";
+  data.forEach(u => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${u.UserId}</td>
+      <td>${escapeHtml(u.Username)}</td>
+      <td>${escapeHtml(u.FullName)}</td>
+      <td>${escapeHtml(u.Zone)}</td>
+      <td>${escapeHtml(u.RoleName)}</td>
+      <td>${escapeHtml(u.Team)}</td>
+      <td>${u.IsActive ? "True" : "False"}</td>
+      <td>${escapeHtml(u.CreatedAt || "")}</td>
+      <td>
+        <button onclick="toggleActive(${u.UserId}, ${u.IsActive ? "false" : "true"})">
+          ${u.IsActive ? "Deactivate" : "Activate"}
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+async function createUser(e){
+  e.preventDefault();
+  const payload = {
+    Username: document.getElementById("cuUsername").value.trim(),
+    FullName: document.getElementById("cuFullName").value.trim(),
+    Zone: document.getElementById("cuZone").value,
+    RoleName: document.getElementById("cuRole").value,
+    Team: document.getElementById("cuTeam").value,
+    Password: document.getElementById("cuPassword").value
+  };
+  const res = await fetch("/api/users", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(payload)
+  });
+  const out = await res.json();
+  alert(out.message || "Done");
+  if(res.ok){
+    e.target.reset();
+    loadUsers();
+  }
+}
+async function toggleActive(userId, newState){
+  const res = await fetch(`/api/users/${userId}/active`, {
+    method: "PATCH",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({IsActive: newState})
+  });
+  const out = await res.json();
+  alert(out.message || "Updated");
+  if(res.ok) loadUsers();
+}
+
+/* ===========================
+   VISIT CODE 2
+=========================== */
+const visitCode2Map = {
+  "NA": ["NA"],
+  "CLUSTER": ["Gen PM", "Filter PM", "Courtesy"],
+  "INSTALLATION":["Fisrt","Carryover"],
+  "BREAKDOWN": ["First Visit", "Carryover", "Repeat Visit"],
+  "SALES SUPPORTS":["Demo Install","Demo Carryover","Site Survey","Sampling","Exhibition","Demo in Office"],
+  "SPECIAL_APPLICATION":["Line Study","First Visit","Carryover Visit"],
+  "TRAINING":["Onsite","Other Venue","KGK Office"],
+  "REFURBISHMENT":["Onsite","KGK Workshop"],
+  "OTHERS-VISIT": ["GPM","FPM","S/W Upgrade", "Courtesy", "Sales Contract", "Order Followup", "Payment Followup"]
+};
+function fillVisitCode2(){
+  const v1 = document.getElementById("visitCode1");
+  const v2 = document.getElementById("visitCode2");
+  if (!v1 || !v2) return;
+  const list = visitCode2Map[v1.value] || [];
+  v2.innerHTML = `<option value="">--Select--</option>` +
+    list.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join("");
+}
+document.addEventListener("change", (e)=>{
+  if (e.target && e.target.id === "visitCode1") fillVisitCode2();
+});
+
+function toggleSmsDaysInput() {
+  const visitCode = document.getElementById("visitCode1").value;
+  const box = document.getElementById("smsDaysBox");
+  const input = document.getElementById("smsUpdatedDays");
+
+  if (visitCode === "CLUSTER") {
+    box.style.display = "block";
+    input.setAttribute("required", "required");
+  } else {
+    box.style.display = "none";
+    input.removeAttribute("required");
+    input.value = "";
+  }
+}
+
+document.addEventListener("change", function(e){
+  if(e.target && e.target.id === "visitCode1"){
+    toggleSmsDaysInput();
+  }
+});
+
+/* ===========================
+   DONUT HELPERS (ONE CLEAN VERSION)
+=========================== */
+const VISIT_TYPE_COLOR = {
+  "Cluster": "#1a73e8",
+  "Breakdown": "#e53935",
+  "Sales Support": "#2e7d32",
+  "Other": "#8e24aa"
+};
+const AMC_STATUS_COLOR = {
+  "AMC": "#2e7d32",
+  "NON AMC": "#1a73e8",
+  "WARRANTY": "#e53935",
+  "NOT IN USE": "#9e9e9e",
+};
+
+function renderCssDonutTo(elId, labels, values){
+  const total = values.reduce((a,b)=>a+b,0);
+  const ring = document.getElementById(elId);
+  if(!ring) return;
+
+  if(total <= 0){
+    ring.style.background = "conic-gradient(#e5e7eb 0deg 360deg)";
+    return;
+  }
+
+  let acc = 0;
+  const parts = labels.map((l,i)=>{
+    const v = Number(values[i]||0);
+    const start = (acc/total)*360;
+    acc += v;
+    const end = (acc/total)*360;
+
+    // 🔥 FIX HERE
+    let color =
+      VISIT_TYPE_COLOR[l] ||
+      AMC_STATUS_COLOR[l] ||
+      "#64748b";
+
+    return `${color} ${start}deg ${end}deg`;
+  });
+
+  ring.style.background = `conic-gradient(${parts.join(",")})`;
+}
+function renderLegendTo(hostId, labels, colors, values, onClick){
+  const host = document.getElementById(hostId);
+  if(!host) return;
+  host.innerHTML = "";
+  labels.forEach((name, i)=>{
+    const row = document.createElement("div");
+    row.className = "legendItem2";
+    row.style.cursor = "pointer";
+
+    row.innerHTML = `
+      <span class="legendDot2" style="background:${colors[i]}"></span>
+      <span>${name}</span>
+      <span class="legendCount2">${values[i]}</span>
+    `;
+    if(onClick) row.addEventListener("click", ()=> onClick(name));
+    host.appendChild(row);
+  });
+}
+async function loadAmcDonut(){
+  showLoading("Loading InstallBase Status...");
+
+  try{
+    const res = await fetch("/api/installbase/mc-summary");
+    const data = await res.json();
+
+    const amc       = Number(data.amc || 0);
+    const nonAmc    = Number(data.non_amc || 0);
+    const warranty  = Number(data.warranty || 0);
+    const notInUse  = Number(data.not_in_use || 0);   // 👈 add this
+
+    const labels = ["AMC","NON AMC","WARRANTY","NOT IN USE"];
+    const values = [amc, nonAmc, warranty, notInUse];
+
+    const total = values.reduce((a,b)=>a+b,0);
+
+    document.getElementById("amcDonutTotal").textContent = total;
+
+    renderCssDonutTo("amcDonutChart", labels, values);
+
+    renderLegendTo(
+      "amcDonutLegend",
+      labels,
+      labels.map(l => AMC_STATUS_COLOR[l] || "#64748b"),
+      values,
+      (status) => openMcStatusDetails(status)
+    );
+
+  }catch(e){
+    console.error("AMC Donut Error:", e);
+  }finally{
+    hideLoading();
+  }
+}
+
+
+
+
+
+/* ===========================
+   WEEKLY DONUT (±7 days) -> OPEN REPORT IN SAME PAGE
+=========================== */
+function openWeekly14Days(type){
+
+  const pad = n => String(n).padStart(2,'0');
+  const today = new Date();
+
+  const fromD = new Date(today);
+  fromD.setDate(fromD.getDate() - 7);
+
+  const toD = new Date(today);
+  toD.setDate(toD.getDate() + 7);
+
+  const from = `${fromD.getFullYear()}-${pad(fromD.getMonth()+1)}-${pad(fromD.getDate())}`;
+  const to   = `${toD.getFullYear()}-${pad(toD.getMonth()+1)}-${pad(toD.getDate())}`;
+
+  // ✅ Redirect to separate HTML file
+  window.location.href =
+  `/weekly-plan-report?visitType=${encodeURIComponent(type)}&from=${from}&to=${to}`;
+}
+
+async function loadWeeklyDonut(){
+  showLoading("Loading 14 days plan...");
+  try{
+    const res = await fetch("/api/weeklyplan/summary");
+    const data = await res.json();
+
+    const by = data.by_type || {};
+    const labels = ["Cluster","Breakdown","Sales Support","Other"];
+    const values = [
+      Number(by.cluster || 0),
+      Number(by.breakdown || 0),
+      Number(by.sales_support || 0),
+      Number(by.other || 0),
+    ];
+    const total = Number(data.total14 ?? values.reduce((a,b)=>a+b,0));
+
+    document.getElementById("donutTotal").textContent = total;
+
+    renderCssDonutTo("weeklyDonutChart", labels, values);
+    renderLegendTo("donutLegend",
+      labels,
+      labels.map(l => VISIT_TYPE_COLOR[l] || "#64748b"),
+      values,
+      (vtype)=> openWeekly14Days(vtype)
+    );
+  }catch(e){
+    document.getElementById("donutTotal").textContent = "0";
+    renderCssDonutTo("weeklyDonutChart", ["Cluster","Breakdown","Sales Support","Other"], [0,0,0,0]);
+    renderLegendTo("donutLegend",
+      ["Cluster","Breakdown","Sales Support","Other"],
+      ["#1a73e8","#e53935","#2e7d32","#8e24aa"],
+      [0,0,0,0],
+      (vtype)=> openWeekly14Days(vtype)
+    );
+  }finally{
+    hideLoading();
+  }
+}
+
+
+
+function applyWsrVisitTypeFilter(visitType){
+  const MAP = {
+    "Cluster": "CLUSTER",
+    "Breakdown": "BREAKDOWN",
+    "Sales Support": "SALES SUPPORTS",
+    "Other": "OTHERS "
+  };
+
+  const code = MAP[visitType] || visitType;
+
+  const pad = n => String(n).padStart(2,'0');
+  const now = new Date();
+
+  const fromD = new Date(now.getFullYear(), now.getMonth(), 1);
+  const toD   = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  const from = `${fromD.getFullYear()}-${pad(fromD.getMonth()+1)}-${pad(fromD.getDate())}`;
+  const to   = `${toD.getFullYear()}-${pad(toD.getMonth()+1)}-${pad(toD.getDate())}`;
+
+  const btn = document.getElementById("btnReport");
+  showSection("reportSection", btn);
+
+  // ✅ DEFINE THESE
+  const s = document.getElementById("reportSearch");
+  const f = document.getElementById("fromDate");
+  const t = document.getElementById("toDate");
+
+  if (s) s.value = code;
+  if (f) f.value = from;
+  if (t) t.value = to;
+
+  loadReport();
+}
+
+
+
+async function loadWsrDonutMonth(){
+  showLoading("Loading WSR this month...");
+  try{
+    const res = await fetch("/api/wsr/summary_month");
+    const data = await res.json();
+
+    const counts = data.counts || {};
+    const labels = ["Cluster","Breakdown","Sales Support","Other"];
+    const values = labels.map(l => Number(counts[l] || 0));
+    const total = Number(data.total || values.reduce((a,b)=>a+b,0));
+
+    document.getElementById("wsrDonutTotal").textContent = total;
+
+    renderCssDonutTo("wsrDonutChart", labels, values);
+    renderLegendTo("wsrDonutLegend",
+      labels,
+      labels.map(l => VISIT_TYPE_COLOR[l] || "#64748b"),
+      values,
+      (vtype)=> applyWsrVisitTypeFilter(vtype)
+    );
+  }catch(e){
+    document.getElementById("wsrDonutTotal").textContent = "0";
+  }finally{
+    hideLoading();
+  }
+}
+
+/* ===========================
+   REPORT VIEW + WEEKLY REPORT
+=========================== */
+function renderTable(columns, rows) {
+
+  const wrap = document.createElement("div");
+  wrap.style.overflow = "auto";
+  wrap.style.maxHeight = "70vh";
+  wrap.style.border = "1px solid #e5e7eb";
+  wrap.style.borderRadius = "12px";
+
+  const table = document.createElement("table");
+  table.id = "mcStatusDataTable";  
+  table.className = "display";
+  table.style.borderCollapse = "collapse";
+  table.style.minWidth = "1600px";
+
+  const thead = document.createElement("thead");
+  const trHead = document.createElement("tr");
+
+  columns.forEach(col => {
+    const th = document.createElement("th");
+    th.textContent = col;
+    trHead.appendChild(th);
+  });
+
+  thead.appendChild(trHead);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
+
+    columns.forEach(col => {
+      const td = document.createElement("td");
+      td.textContent = row[col] ?? "";
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+
+  return wrap;
+}
+
+
+function masterDoSearch(){ openMaster(); }
+function masterClear(){
+  const ms = document.getElementById("masterSearch");
+  if(ms) ms.value = "";
+  openMaster();
+}
+
+/* WEEKLY PLAN REPORT */
+function wpReportDoSearch(){ loadWeeklyPlanReport(); }
+function wpReportClear(){
+  const s = document.getElementById("wpReportSearch");
+  const f = document.getElementById("wpFromDate");
+  const t = document.getElementById("wpToDate");
+  if(s) s.value = "";
+  if(f) f.value = "";
+  if(t) t.value = "";
+  loadWeeklyPlanReport();
+
+}
+
+async function loadWeeklyPlanReport(){
+  const errBox = document.getElementById("wpReportErr");
+  if(errBox) errBox.textContent = "";
+
+  const q = (document.getElementById("wpReportSearch")?.value || "").trim();
+  const from = document.getElementById("wpFromDate")?.value || "";
+  const to   = document.getElementById("wpToDate")?.value || "";
+
+  const params = new URLSearchParams();
+  params.set("limit","2000");
+  if(q) params.set("q", q);
+  if(from) params.set("from", from);
+  if(to) params.set("to", to);
+
+  showLoading("Loading weekly plan report...");
+  try{
+    const res = await fetch("/api/weeklyplan/report?" + params.toString());
+    const data = await res.json();
+
+    if(!res.ok || data.error){
+      if(errBox) errBox.textContent = data.error || "Weekly plan report load error";
+      return;
+    }
+
+    const table = document.getElementById("wpReportTable");
+    const thead = table.querySelector("thead");
+    const tbody = table.querySelector("tbody");
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    const cols = data.columns || [];
+    const rows = data.rows || [];
+    if(!cols.length) return;
+
+    const trh = document.createElement("tr");
+    cols.forEach(c=>{
+      const th = document.createElement("th");
+      th.textContent = c;
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh);
+
+    const rc = document.getElementById("wpRowCount");
+    if(rc) rc.textContent = String(rows.length || 0);
+
+    rows.forEach(r=>{
+      const tr = document.createElement("tr");
+      cols.forEach(c=>{
+        const td = document.createElement("td");
+        td.textContent = (r[c] ?? "");
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }catch(e){
+    if(errBox) errBox.textContent = String(e);
+  }finally{
+    hideLoading();
+  }
+}
+function reportDoSearch(){
+  loadReport();
+}
+function reportClear(){
+  const s = document.getElementById("reportSearch");
+  const f = document.getElementById("fromDate");
+  const t = document.getElementById("toDate");
+
+  if(s) s.value = "";
+  if(f) f.value = "";
+  if(t) t.value = "";
+
+  loadReport();
+}
+
+
+/* REPORT VIEW */
+async function loadReport(){
+
+  const errBox = document.getElementById("reportErr");
+  if(errBox) errBox.textContent = "";
+
+  const q = (document.getElementById("reportSearch")?.value || "").trim();
+  const from = document.getElementById("fromDate")?.value || "";
+  const to   = document.getElementById("toDate")?.value || "";
+
+  const params = new URLSearchParams();
+  params.set("limit","2000");
+  if(q) params.set("q", q);
+  if(from) params.set("from", from);
+  if(to) params.set("to", to);
+
+  showLoading("Loading report...");
+  try{
+    const res = await fetch("/api/wsr-report?" + params.toString());
+    const data = await res.json();
+
+    if (!res.ok || data.error){
+      if(errBox) errBox.textContent = data.error || "Report load error";
+      return;
+    }
+
+    const thead = document.querySelector("#dataTable thead");
+    const tbody = document.querySelector("#dataTable tbody");
+    if(!thead || !tbody) return;
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    function norm(s){
+      return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g,"");
+    }
+
+    const apiCols = Array.isArray(data.columns) ? data.columns : [];
+    const rows    = Array.isArray(data.rows) ? data.rows : [];
+
+    const desired = [
+      "ID","ZONE","Engineer Name","MMM-YY","Service report Number","Customer name",
+      "Location","Contact Person Name","Designation","Contact Number","E-mail id",
+      "Call Logged Date","Problem reported","Machine Status","Visit Code 1","Visit Code 2",
+      "Printer Model","M/C No","Serial No","Ink Type","Turn on Time","Print on time",
+      "Visit Date","Travel Start (HH:MM)","Travel End (HH:MM)","TRAVEL TIME",
+      "Work Start (HH:MM)","Work End (HH:MM)","WORK TIME","Action Taken (in brief)",
+      "INK","Solvent","CNC","Filter Kit Due Date/Hrs","Customer Feedback","Call Status",
+      "Re-visit Required","Service Engineer Remarks","Service Manager Remarks"
+    ];
+
+    const apiColsNorm = new Map(apiCols.map(c => [norm(c), c]));
+    const desiredActual = desired.map(d => apiColsNorm.get(norm(d))).filter(Boolean);
+    const remaining = apiCols.filter(c => !desiredActual.includes(c));
+    const cols = [...desiredActual, ...remaining];
+
+    if(!cols.length){
+      if(errBox) errBox.textContent = "No columns from API";
+      return;
+    }
+
+    const trh = document.createElement("tr");
+    cols.forEach(h=>{
+      const th = document.createElement("th");
+      th.textContent = h;
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh);
+
+    const rc = document.getElementById("reportRowCount");
+    if(rc) rc.textContent = String(rows.length || 0);
+
+    rows.forEach(r=>{
+      const tr = document.createElement("tr");
+      cols.forEach(c=>{
+        const td = document.createElement("td");
+        td.textContent = (r[c] ?? "");
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+  }catch(e){
+    if(errBox) errBox.textContent = String(e);
+  }finally{
+    hideLoading();
+  }
+}
+
+/* EXPORTS */
+async function exportMaster(){
+  const q = (document.getElementById("masterSearch")?.value || "").trim();
+
+  const params = new URLSearchParams();
+  params.set("limit","5000");
+  if(q) params.set("q", q);
+
+  showLoading("Exporting master...");
+  try{
+    const res = await fetch("/api/master/installbase?" + params.toString());
+    const data = await res.json();
+    if(!res.ok || data.error) throw new Error(data.error || "Export failed");
+
+    const cols = data.columns || [];
+    const rows = data.rows || [];
+
+    const fname = `InstallBase_${q ? "search" : "all"}.csv`;
+    downloadCSV(fname, cols, rows);
+  }catch(e){
+    alert(String(e));
+  }finally{
+    hideLoading();
+  }
+}
+
+function downloadCSV(filename, columns, rows){
+  const esc = (v)=>{
+    const s = String(v ?? "");
+    if (/[",\n\r]/.test(s)) return `"${s.replaceAll('"','""')}"`;
+    return s;
+  };
+
+  const lines = [];
+  lines.push(columns.map(esc).join(","));
+  rows.forEach(r=>{
+    lines.push(columns.map(c => esc(r[c])).join(","));
+  });
+
+  const csv = "\ufeff" + lines.join("\r\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function exportReport(){
+  const q = (document.getElementById("reportSearch")?.value || "").trim();
+  const from = document.getElementById("fromDate")?.value || "";
+  const to   = document.getElementById("toDate")?.value || "";
+
+  const params = new URLSearchParams();
+  params.set("limit","5000");
+  if(q) params.set("q", q);
+  if(from) params.set("from", from);
+  if(to) params.set("to", to);
+
+  showLoading("Exporting report...");
+  try{
+    const res = await fetch("/api/wsr-report/export?" + params.toString());
+    const data = await res.json();
+    if(!res.ok || data.error) throw new Error(data.error || "Export failed");
+
+    function norm(s){
+      return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g,"");
+    }
+
+    const apiCols = Array.isArray(data.columns) ? data.columns : [];
+    const rows    = Array.isArray(data.rows) ? data.rows : [];
+
+    const desired = [
+      "ID","ZONE","Engineer Name","MMM-YY","Service report Number","Customer name",
+      "Location","Contact Person Name","Designation","Contact Number","E-mail id",
+      "Call Logged Date","Problem reported","Machine Status","Visit Code 1","Visit Code 2",
+      "Printer Model","M/C No","Serial No","Ink Type","Turn on Time","Print on time",
+      "Visit Date","Travel Start (HH:MM)","Travel End (HH:MM)","TRAVEL TIME",
+      "Work Start (HH:MM)","Work End (HH:MM)","WORK TIME","Action Taken (in brief)",
+      "INK","Solvent","CNC","Filter Kit Due Date/Hrs","Customer Feedback","Call Status",
+      "Re-visit Required","Service Engineer Remarks","Service Manager Remarks"
+    ];
+
+    const apiColsNorm = new Map(apiCols.map(c => [norm(c), c]));
+    const desiredActual = desired.map(d => apiColsNorm.get(norm(d))).filter(Boolean);
+    const cols = desiredActual;
+
+    const fname = `WSR_Report_${from || "ALL"}_to_${to || "ALL"}.csv`;
+    downloadCSV(fname, cols, rows);
+
+  }catch(e){
+    alert(String(e));
+  }finally{
+    hideLoading();
+  }
+}
+
+async function exportWeeklyPlanReport(){
+  const q = (document.getElementById("wpReportSearch")?.value || "").trim();
+  const from = document.getElementById("wpFromDate")?.value || "";
+  const to   = document.getElementById("wpToDate")?.value || "";
+
+  const params = new URLSearchParams();
+  params.set("limit","5000");
+  if(q) params.set("q", q);
+  if(from) params.set("from", from);
+  if(to) params.set("to", to);
+
+  showLoading("Exporting weekly plan...");
+  try{
+    const res = await fetch("/api/weeklyplan/report?" + params.toString());
+    const data = await res.json();
+    if(!res.ok || data.error) throw new Error(data.error || "Export failed");
+
+    function norm(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,""); }
+
+    const apiCols = Array.isArray(data.columns) ? data.columns : [];
+    const rows    = Array.isArray(data.rows) ? data.rows : [];
+
+    const desired = [
+      "zone","engineerName","clusterCode","visit_date","customerName","location",
+      "contact_person_name","phoneNumber","email","localOutstation","distance_km",
+      "mode_of_transport","expectedExpense","printerModel","printer_sr_no",
+      "printerStatus","visitType","lastVisitDate","tot","pot","ink","solvent","cnc",
+      "amcDueDate","filter_due_date_hrs","sms_expiry_date","outstandingAmount","filterChange",
+      "smsUpdate","paymentCollected","inkexpiryfollowup","amcFollowup",
+      "filterKitFollowup","stockCheck","other","visitCompleteDate","remarks"
+    ];
+
+    const map = new Map(apiCols.map(c => [norm(c), c]));
+    const desiredActual = desired.map(d => map.get(norm(d))).filter(Boolean);
+    const cols = desiredActual.length ? desiredActual : apiCols;
+
+    const fname = `WeeklyPlan_${from || "ALL"}_to_${to || "ALL"}.csv`;
+    downloadCSV(fname, cols, rows);
+
+  }catch(e){
+    alert(String(e));
+  }finally{
+    hideLoading();
+  }
+}
+
+/* =========================================================
+   ✅✅✅ AUTOSUGGEST (FULL WORKING) - WSR + WEEKLY + MASTER
+   NOTE: BAKI LOGIC CHANGE NAHI
+========================================================= */
+let INSTALLBASE_CACHE = { columns: [], rows: [] };
+
+function getCustomerFromRow(r){
+  return getField(r,
+    ["Customer name","Customer Name","customerName","customer_name"],
+    ["customer"]
+  );
+}
+
+async function warmInstallbaseCache(){
+  try{
+    const res = await fetch("/api/master/installbase?limit=2000");
+    const data = await res.json();
+    if(res.ok && !data.error){
+      INSTALLBASE_CACHE = { columns: data.columns || [], rows: data.rows || [] };
+    }
+  }catch(e){}
+}
+function attachSuggest({ inputId, boxId, sourceFn, onSelect, minChars = 2, showAllOnFocus = false }){
+  const inp = document.getElementById(inputId);
+  const box = document.getElementById(boxId);
+  if(!inp || !box) return;
+
+  if (inp.dataset.suggestAttached === "1") return;
+  inp.dataset.suggestAttached = "1";
+
+  let t = null;
+
+  function close(){
+    box.style.display = "none";
+    box.innerHTML = "";
+  }
+  function open(items){
+    if(!items || !items.length){ close(); return; }
+    box.innerHTML = items.map(v => `
+      <div class="suggestItem" data-v="${escapeHtml(v)}">${escapeHtml(v)}</div>
+    `).join("");
+    box.style.display = "block";
+  }
+  function pick(v){
+    inp.value = v;
+    close();
+    if(onSelect) onSelect(v);
+  }
+
+  box.addEventListener("mousedown", (e)=> e.preventDefault());
+
+  box.addEventListener("click", (e)=>{
+    const it = e.target.closest(".suggestItem");
+    if(!it) return;
+    const v = it.getAttribute("data-v") || it.textContent || "";
+    pick(v);
+  });
+
+  inp.addEventListener("input", ()=>{
+    clearTimeout(t);
+    const q = inp.value.trim().toLowerCase();
+
+    // ✅ if minChars=0 allow empty list
+    if(minChars > 0 && q.length < minChars){ close(); return; }
+
+    t = setTimeout(()=>{
+      const items = sourceFn(q).slice(0, 25);
+      open(items);
+    }, 120);
+  });
+
+  inp.addEventListener("blur", ()=> setTimeout(close, 150));
+
+  inp.addEventListener("focus", ()=>{
+    const q = inp.value.trim().toLowerCase();
+
+    // ✅ NEW: focus pe list open, even if empty
+    if(showAllOnFocus){
+      const items = sourceFn(q).slice(0, 25);
+      open(items);
+      return;
+    }
+
+    if(q.length >= minChars){
+      const items = sourceFn(q).slice(0, 25);
+      open(items);
+    }
+  });
+}
+
+function suggestFromRows(q, getter){
+  const rows = INSTALLBASE_CACHE.rows || [];
+  const out = [];
+  const seen = new Set();
+
+  for(const r of rows){
+    const v = String(getter(r) || "").trim();
+    if(!v) continue;
+    const nv = v.toLowerCase();
+    if(!nv.includes(q)) continue;
+    if(seen.has(nv)) continue;
+    seen.add(nv);
+    out.push(v);
+    if(out.length >= 60) break;
+  }
+  return out;
+}
+
+function setupAutoSuggest(){
+  // MASTER Search
+  attachSuggest({
+    inputId: "masterSearch",
+    boxId: "masterSuggest",
+    sourceFn: (q)=>{
+      const rows = INSTALLBASE_CACHE.rows || [];
+      const out = [];
+      const seen = new Set();
+      for(const r of rows){
+        const c = String(getCustomerFromRow(r) || "").trim();
+        const s = String(getSerialFromRow(r) || "").trim();
+        const m = String(getModelFromRow(r) || "").trim();
+        const l = String(getLocationFromRow(r) || "").trim();
+        const pack = [c,s,m,l].filter(Boolean);
+        for(const v of pack){
+          const nv = v.toLowerCase();
+          if(!nv.includes(q)) continue;
+          if(seen.has(nv)) continue;
+          seen.add(nv);
+          out.push(v);
+          if(out.length >= 30) return out;
+        }
+      }
+      return out;
+    }
+  });
+
+  // WSR
+  attachSuggest({
+    inputId: "wsrCustomer",
+    boxId: "customerSuggest",
+    sourceFn: (q)=> suggestFromRows(q, getCustomerFromRow),
+    onSelect: ()=> document.getElementById("wsrCustomer").dispatchEvent(new Event("change"))
+  });
+
+
+  // WEEKLY PLAN
+  attachSuggest({
+    inputId: "wpCustomer",
+    boxId: "wpCustomerSuggest",
+    sourceFn: (q)=> suggestFromRows(q, getCustomerFromRow),
+    onSelect: ()=> document.getElementById("wpCustomer").dispatchEvent(new Event("change"))
+  });
+}
+
+async function ensureSuggestReady(){
+  if(!INSTALLBASE_CACHE?.rows?.length){
+    await warmInstallbaseCache();
+  }
+  setupAutoSuggest();
+
+  // ✅ IMPORTANT: rebuild index + attach cascade
+  IB_INDEX = null;
+  buildInstallbaseIndex();
+  setupCascades();
+}
+
+/* =========================================================
+   ✅ CASCADING: Customer -> Location -> Model -> Serial -> Details
+   Works with INSTALLBASE_CACHE.rows (from /api/master/installbase)
+========================================================= */
+
+// ---------- helpers ----------
+function nstr(v){ return String(v ?? "").trim(); }
+function nlow(v){ return nstr(v).toLowerCase(); }
+
+function getContactPersonFromRow(r){
+  return getField(r,
+    ["Contact Person Name","ContactPerson","contactPerson","contact_person"],
+    ["contactperson","contact"]
+  );
+}
+function getContactNumberFromRow(r){
+  return getField(
+    r,
+    [
+      "Contact No.","Contact No",          // ✅ MASTER column
+      "Contact No. (2)","Contact No (2)",  // optional
+      "Contact Number","ContactNumber","contactNumber",
+      "Phone Number","phoneNumber",
+      "phone","mobile"
+    ],
+    ["contactno","contactnumber","phonenumber","mobile"]
+  );
+}
+
+function getEmailFromRow(r){
+  return getField(r,
+    ["E-mail id","Email","email","emailId"],
+    ["email"]
+  );
+}
+function getMcNoFromRow(r){
+  return getField(r, ["M/C No","MC No","mcNo","mc_no"], ["mcno"]);
+}
+function getMachineStatusFromRow(r){
+  return getField(
+    r,
+    ["Mc Status","MC Status","McStatus","mcStatus"],
+    ["mcstatus"]
+  );
+}
+function getPrinterStatusFromRow(r){
+  return getField(
+    r,
+    ["Printer Status","printerStatus","PRINTER STATUS"],
+    ["printerstatus"]  // ✅ "status" hata diya (too generic)
+  );
+}
+
+function getInkTypeFromRow(r){
+  return getField(r, ["Ink Type","inkType"], ["inktype"]);
+
+}
+
+function getFilterKitDueFromRow(r){
+  return getField(r,
+    ["Filter Kit Due Date/Hrs","Filter Kit Due","filterKitDue","filter_kit_due","FilterDue","filterDue"],
+    ["filterkitdue","filterdue","filterkit","kitdue"]
+  );
+}
+async function exportWeeklyPlanReport(){
+
+  const q = (document.getElementById("wpReportSearch")?.value || "").trim();
+  const from = document.getElementById("wpFromDate")?.value || "";
+  const to   = document.getElementById("wpToDate")?.value || "";
+
+  const params = new URLSearchParams();
+  params.set("limit","5000");
+  if(q) params.set("q", q);
+  if(from) params.set("from", from);
+  if(to) params.set("to", to);
+
+  showLoading("Exporting weekly plan...");
+
+  try{
+
+    const res = await fetch("/api/weeklyplan/report?" + params.toString());
+    const data = await res.json();
+    if(!res.ok || data.error) throw new Error(data.error || "Export failed");
+
+    function norm(s){
+      return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"");
+    }
+
+    const apiCols = Array.isArray(data.columns) ? data.columns : [];
+    let rows = Array.isArray(data.rows) ? data.rows : [];
+
+    // ================= SORT BY visit_date ASC =================
+    rows.sort((a,b)=>{
+      const d1 = new Date(a.visit_date || "");
+      const d2 = new Date(b.visit_date || "");
+      return d1 - d2; // ASCENDING
+    });
+
+    const desired = [
+      "zone","engineerName","clusterCode","visit_date","customerName","location",
+      "contact_person_name","phoneNumber","email","localOutstation","distance_km",
+      "mode_of_transport","expectedExpense","printerModel","printer_sr_no",
+      "printerStatus","visitType","lastVisitDate","tot","pot","ink","solvent","cnc",
+      "amcDueDate","filter_due_date_hrs","sms_expiry_date","outstandingAmount","filterChange",
+      "smsUpdate","paymentCollected","inkexpiryfollowup","amcFollowup",
+      "filterKitFollowup","stockCheck","other","visitCompleteDate","remarks"
+    ];
+
+    const map = new Map(apiCols.map(c => [norm(c), c]));
+    const desiredActual = desired.map(d => map.get(norm(d))).filter(Boolean);
+    const cols = desiredActual.length ? desiredActual : apiCols;
+
+    const fname = `WeeklyPlan_${from || "ALL"}_to_${to || "ALL"}.csv`;
+    downloadCSV(fname, cols, rows);
+
+  }catch(e){
+    alert(String(e));
+  }finally{
+    hideLoading();
+  }
+}
+
+function getAmcDueDateFromRow(r){
+
+  let v = getField(r,
+    ["AMC Due Date","amcduedate","amcDueDate"," amc Due Date "],
+    ["amcduedate"]
+  );
+
+  if(!v) return "";
+
+  // If already YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+
+  // Convert DD-MM-YYYY or DD/MM/YYYY → YYYY-MM-DD
+  const parts = v.split(/[-\/]/);
+
+  if(parts.length === 3){
+    const dd = parts[0].padStart(2,"0");
+    const mm = parts[1].padStart(2,"0");
+    const yyyy = parts[2];
+
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  return "";
+}
+
+function getFilterDueFromRow(r){
+
+  let v = getField(
+    r,
+    [
+      "Filter Due Date / Hrs",
+      "Filter Due Date",
+      "Next Filter Due Date",
+      "filterDue",
+      "FILTER DUE"
+    ],
+    [
+      "filterduedate",
+      "nextfilter",
+      "filterdue"
+    ]
+  );
+
+  if(!v) return "";
+
+  v = String(v).trim();
+
+  // If already YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+
+  // Convert DD-MM-YYYY or DD/MM/YYYY → YYYY-MM-DD
+  const parts = v.split(/[-\/]/);
+
+  if(parts.length === 3){
+    const dd = parts[0].padStart(2,"0");
+    const mm = parts[1].padStart(2,"0");
+    const yyyy = parts[2];
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  return v; // if hrs format like 1200 Hrs
+}
+
+
+function getClusterCodeFromRow(r){
+  return getField(
+    r,
+    [
+      "Cluster No",      
+      "ClusterNo",
+      "Cluster No.",
+      "Cluster Code",
+      "Cluster",
+      "cluster_no"
+    ],
+    ["cluster"]
+  );
+}
+
+
+// ---------- indices ----------
+let IB_INDEX = null;
+
+function buildInstallbaseIndex(){
+  const rows = INSTALLBASE_CACHE.rows || [];
+  const idx = {
+    customers: new Map(),    // cust -> Set(loc)
+    custLocModels: new Map(),// "cust||loc" -> Set(model)
+    clmSerials: new Map(),   // "cust||loc||model" -> Set(serial)
+    serialRows: new Map(),   // serial -> [rows]
+    custRows: new Map(),     // cust -> [rows]
+  };
+
+  for(const r of rows){
+    const cust = nstr(getCustomerFromRow(r));
+    const loc  = nstr(getLocationFromRow(r));
+    const model= nstr(getModelFromRow(r));
+    const serial=nstr(getSerialFromRow(r));
+    if(!cust) continue;
+
+    const kc = nlow(cust);
+    if(!idx.custRows.has(kc)) idx.custRows.set(kc, []);
+    idx.custRows.get(kc).push(r);
+
+    if(loc){
+      if(!idx.customers.has(kc)) idx.customers.set(kc, new Set());
+      idx.customers.get(kc).add(loc);
+
+      const keyCL = `${kc}||${nlow(loc)}`;
+      if(!idx.custLocModels.has(keyCL)) idx.custLocModels.set(keyCL, new Set());
+      if(model) idx.custLocModels.get(keyCL).add(model);
+
+      const keyCLM = `${kc}||${nlow(loc)}||${nlow(model)}`;
+      if(!idx.clmSerials.has(keyCLM)) idx.clmSerials.set(keyCLM, new Set());
+      if(serial) idx.clmSerials.get(keyCLM).add(serial);
+    }
+
+    if(serial){
+      const ks = nlow(serial);
+      if(!idx.serialRows.has(ks)) idx.serialRows.set(ks, []);
+      idx.serialRows.get(ks).push(r);
+    }
+  }
+
+  IB_INDEX = idx;
+}
+
+function ensureIndex(){
+  if(!IB_INDEX) buildInstallbaseIndex();
+}
+
+// pick best row for (cust, loc, model, serial) preference
+function pickRow({cust, loc, model, serial}){
+  ensureIndex();
+  const kc = nlow(cust);
+  const kl = nlow(loc);
+  const km = nlow(model);
+  const ks = nlow(serial);
+
+  // 1) serial exact
+  if(serial && IB_INDEX.serialRows.has(ks)){
+    const list = IB_INDEX.serialRows.get(ks);
+    // prefer matching cust/loc/model if provided
+    let best = list.find(r =>
+      (!cust || nlow(getCustomerFromRow(r)) === kc) &&
+      (!loc  || nlow(getLocationFromRow(r)) === kl) &&
+      (!model|| nlow(getModelFromRow(r)) === km)
+    );
+    return best || list[0];
+  }
+
+  // 2) cust rows fallback
+  const cr = IB_INDEX.custRows.get(kc) || [];
+  let best = cr.find(r =>
+    (!loc  || nlow(getLocationFromRow(r)) === kl) &&
+    (!model|| nlow(getModelFromRow(r)) === km)
+  );
+  return best || cr[0] || null;
+}
+
+// ---------- DOM setters ----------
+function setVal(id, v){
+  const el = document.getElementById(id);
+  if(el) el.value = nstr(v);
+}
+function clearVal(id){
+  const el = document.getElementById(id);
+  if(el) el.value = "";
+}
+
+// ---------- cascading for a form (WSR / Weekly) ----------
+function setupCascadeForForm(cfg){
+  // cfg: { customerId, locationId, modelId, serialId, contactPersonId, contactNumberId, emailId, machineStatusId, mcNoId, printerStatusId, inkTypeId }
+
+  const custEl = document.getElementById(cfg.customerId);
+  const locEl  = document.getElementById(cfg.locationId);
+  const modEl  = document.getElementById(cfg.modelId);
+  const serEl  = document.getElementById(cfg.serialId);
+  if(!custEl || !locEl || !modEl || !serEl) return;
+
+  // prevent double setup
+  if(custEl.dataset.cascadeAttached === "1") return;
+  custEl.dataset.cascadeAttached = "1";
+
+  // Make these inputs empty when upstream changes
+  function resetAfterCustomer(){
+    clearVal(cfg.locationId);
+    clearVal(cfg.modelId);
+    clearVal(cfg.serialId);
+    
+    // also clear machine details
+    if(cfg.machineStatusId) clearVal(cfg.machineStatusId);
+    if(cfg.printerStatusId) clearVal(cfg.printerStatusId);
+    if(cfg.mcNoId) clearVal(cfg.mcNoId);
+    if(cfg.inkTypeId) clearVal(cfg.inkTypeId);
+    if(cfg.filterKitDueId) clearVal(cfg.filterKitDueId);
+    if(cfg.amcDueDateId) clearVal(cfg.amcDueDateId);
+    if(cfg.filterDueId)  clearVal(cfg.filterDueId);
+
+
+
+  }
+  function resetAfterLocation(){
+    clearVal(cfg.modelId);
+    clearVal(cfg.serialId);
+    if(cfg.amcDueDateId) clearVal(cfg.amcDueDateId);
+    if(cfg.filterDueId)  clearVal(cfg.filterDueId);
+
+
+    if(cfg.machineStatusId) clearVal(cfg.machineStatusId);
+    if(cfg.printerStatusId) clearVal(cfg.printerStatusId);
+    if(cfg.mcNoId) clearVal(cfg.mcNoId);
+    if(cfg.inkTypeId) clearVal(cfg.inkTypeId);
+    if(cfg.filterKitDueId) clearVal(cfg.filterKitDueId);
+  }
+
+  function resetAfterModel(){
+    clearVal(cfg.serialId);
+    if(cfg.machineStatusId) clearVal(cfg.machineStatusId);
+    if(cfg.printerStatusId) clearVal(cfg.printerStatusId);
+    if(cfg.mcNoId) clearVal(cfg.mcNoId);
+    if(cfg.inkTypeId) clearVal(cfg.inkTypeId);
+    if(cfg.filterKitDueId) clearVal(cfg.filterKitDueId);   // ✅ add
+    if(cfg.amcDueDateId) clearVal(cfg.amcDueDateId);
+    if(cfg.filterDueId)  clearVal(cfg.filterDueId);
+
+  }
+ 
+
+  // ---- CUSTOMER SELECT hook ----
+  custEl.addEventListener("change", ()=>{
+    const cust = nstr(custEl.value);
+    if(!cust) return;
+    ensureIndex();
+    resetAfterCustomer();
+
+    // fill contact from best row for customer (if exists)
+    const row = pickRow({cust});
+    if(row){
+      if(cfg.contactPersonId) setVal(cfg.contactPersonId, getContactPersonFromRow(row));
+      if(cfg.contactNumberId) setVal(cfg.contactNumberId, getContactNumberFromRow(row));
+      if(cfg.emailId) setVal(cfg.emailId, getEmailFromRow(row));
+      if(cfg.filterKitDueId) setVal(cfg.filterKitDueId, getFilterKitDueFromRow(row));
+
+    }
+
+    // if only 1 location, auto set it
+    const locSet = IB_INDEX.customers.get(nlow(cust));
+    const locs = locSet ? Array.from(locSet) : [];
+    if(locs.length === 1){
+      locEl.value = locs[0];
+      locEl.dispatchEvent(new Event("change"));
+    }
+  });
+
+  // ---- LOCATION SELECT hook ----
+  locEl.addEventListener("change", ()=>{
+    const cust = nstr(custEl.value);
+    const loc  = nstr(locEl.value);
+    if(!cust || !loc) return;
+    ensureIndex();
+    resetAfterLocation();
+
+    // refine contact based on cust+loc
+    const row = pickRow({cust, loc});
+    if(row){
+      if(cfg.contactPersonId) setVal(cfg.contactPersonId, getContactPersonFromRow(row));
+      if(cfg.contactNumberId) setVal(cfg.contactNumberId, getContactNumberFromRow(row));
+      if(cfg.emailId) setVal(cfg.emailId, getEmailFromRow(row));
+    }
+
+    // if only 1 model, auto set it
+    const keyCL = `${nlow(cust)}||${nlow(loc)}`;
+    const mset = IB_INDEX.custLocModels.get(keyCL);
+    const models = mset ? Array.from(mset) : [];
+    if(models.length === 1){
+      modEl.value = models[0];
+      modEl.dispatchEvent(new Event("change"));
+    }
+  });
+
+  // ---- MODEL SELECT hook ----
+  modEl.addEventListener("change", ()=>{
+    const cust = nstr(custEl.value);
+    const loc  = nstr(locEl.value);
+    const model= nstr(modEl.value);
+    if(!cust || !loc || !model) return;
+    ensureIndex();
+    resetAfterModel();
+
+    // if only 1 serial, auto set it
+    const keyCLM = `${nlow(cust)}||${nlow(loc)}||${nlow(model)}`;
+    const sset = IB_INDEX.clmSerials.get(keyCLM);
+    const serials = sset ? Array.from(sset) : [];
+    if(serials.length === 1){
+      serEl.value = serials[0];
+      serEl.dispatchEvent(new Event("change"));
+    }
+  });
+
+  // ---- SERIAL SELECT hook ----
+  serEl.addEventListener("change", ()=>{
+    const cust = nstr(custEl.value);
+    const loc  = nstr(locEl.value);
+    const model= nstr(modEl.value);
+    const serial= nstr(serEl.value);
+    
+
+    if(!serial) return;
+
+    const row = pickRow({cust, loc, model, serial});
+    if(!row) return;
+
+    // fill machine details
+    if(cfg.machineStatusId) setVal(cfg.machineStatusId, getMachineStatusFromRow(row));
+    if(cfg.printerStatusId){const ps = getPrinterStatusFromRow(row) || getMachineStatusFromRow(row);setVal(cfg.printerStatusId, ps);
+      
+    }
+
+    if(cfg.mcNoId) setVal(cfg.mcNoId, getMcNoFromRow(row));
+    if(cfg.inkTypeId) setVal(cfg.inkTypeId, getInkTypeFromRow(row));
+    if(cfg.filterKitDueId) setVal(cfg.filterKitDueId, getFilterKitDueFromRow(row));
+    if(cfg.amcDueDateId) setVal(cfg.amcDueDateId, getAmcDueDateFromRow(row));
+    if(cfg.filterDueId)  setVal(cfg.filterDueId,  getFilterDueFromRow(row));
+    if(cfg.clusterCodeId) setVal(cfg.clusterCodeId, getClusterCodeFromRow(row));
+
+
+    // also refresh contact if available
+    if(cfg.contactPersonId) setVal(cfg.contactPersonId, getContactPersonFromRow(row));
+    if(cfg.contactNumberId) setVal(cfg.contactNumberId, getContactNumberFromRow(row));
+    if(cfg.emailId) setVal(cfg.emailId, getEmailFromRow(row));
+
+        // ===== FETCH LAST WSR DATA =====
+    (async function(){
+      try{
+        const res = await fetch(`/api/wsr/latest-by-serial?serial=${encodeURIComponent(serial)}`);
+        const data = await res.json();
+        if(!res.ok || !data) return;
+
+        const form = document.getElementById("weeklyPlanForm");
+        if(!form) return;
+
+        form.elements["lastVisitDate"].value =
+          data.visit_date ? String(data.visit_date).split("T")[0] : "";
+          setVal("wp_tot", data.last_tot);
+          setVal("wp_pot", data.last_pot);
+          setVal("wp_ink", data.ink);
+          setVal("wp_solvent", data.solvent);
+          setVal("wp_cnc", data.cnc);
+
+
+      }catch(e){
+        console.error("WSR auto-fill error:", e);
+      }
+
+
+
+    })();
+    // ===== FETCH SMS EXPIRY =====
+    (async function(){
+      try{
+        const res = await fetch(`/api/sms/by-serial?serial=${encodeURIComponent(serial)}`);
+        const data = await res.json();
+      if(!res.ok || !data.ok) return;
+      const smsField = document.getElementById("wp_smsExpiry");
+      if(smsField){
+        smsField.value = data.expiry_date || "";}
+
+  }catch(e){
+    console.error("SMS auto-fill error:", e);
+  }
+})();
+
+
+
+
+  });
+  
+
+  // ---------- connect dropdown suggestions with the cascade sources ----------
+  // Customer already has suggest; now source for location/model/serial depends on previous selections.
+
+  // LOCATION suggest
+  attachSuggest({
+    inputId: cfg.locationId,
+    boxId: cfg.locationSuggestId,
+    sourceFn: (q)=>{
+      ensureIndex();
+      const cust = nstr(custEl.value);
+      if(!cust) return [];
+      const locSet = IB_INDEX.customers.get(nlow(cust));
+      const locs = locSet ? Array.from(locSet) : [];
+      return locs.filter(x => nlow(x).includes(q));
+    },
+    onSelect: ()=> locEl.dispatchEvent(new Event("change")),
+    minChars: 0,
+    showAllOnFocus: true
+  });
+  // MODEL suggest
+  attachSuggest({
+    inputId: cfg.modelId,
+    boxId: cfg.modelSuggestId,
+    sourceFn: (q)=>{
+      ensureIndex();
+      const cust = nstr(custEl.value);
+      const loc  = nstr(locEl.value);
+      if(!cust || !loc) return [];
+      const keyCL = `${nlow(cust)}||${nlow(loc)}`;
+      const mset = IB_INDEX.custLocModels.get(keyCL);
+      const models = mset ? Array.from(mset) : [];
+      return models.filter(x => nlow(x).includes(q));
+    },
+    onSelect: ()=> modEl.dispatchEvent(new Event("change")),
+    minChars: 0,
+    showAllOnFocus: true
+  });
+  // SERIAL suggest
+  attachSuggest({
+    inputId: cfg.serialId,
+    boxId: cfg.serialSuggestId,
+    sourceFn: (q)=>{
+      ensureIndex();
+      const cust = nstr(custEl.value);
+      const loc  = nstr(locEl.value);
+      const model= nstr(modEl.value);
+      if(!cust || !loc || !model) return [];
+      const keyCLM = `${nlow(cust)}||${nlow(loc)}||${nlow(model)}`;
+      const sset = IB_INDEX.clmSerials.get(keyCLM);
+      const serials = sset ? Array.from(sset) : [];
+      return serials.filter(x => nlow(x).includes(q));
+    },
+    onSelect: ()=> serEl.dispatchEvent(new Event("change")),
+    minChars: 0,
+    showAllOnFocus: true
+  });
+}
+/* Call this after cache ready */
+function setupCascades(){
+
+  // WEEKLY PLAN mapping
+  setupCascadeForForm({
+    customerId: "wpCustomer",
+    locationId: "wp_location",
+    modelId: "wp_printerModel",
+    serialId: "wp_serialNo",
+
+    locationSuggestId: "wpLocationSuggest",
+    modelSuggestId: "wpModelSuggest",
+    serialSuggestId: "wpSerialSuggest",
+
+    contactPersonId: "wp_contactPerson",
+    contactNumberId: "wp_phoneNumber",
+    emailId: "wp_email",
+
+    printerStatusId: "wp_printerStatus",
+    machineStatusId: "wp_printerStatus",
+    amcDueDateId: "wp_amcDueDate",
+    filterDueId: "wp_filterDue",
+    clusterCodeId: "wp_clusterCode",
+
+
+  });
+
+  // WSR mapping
+  setupCascadeForForm({
+    customerId: "wsrCustomer",
+    locationId: "wsr_location",
+    modelId: "wsr_printerModel",
+    serialId: "wsr_serialNo",
+
+    locationSuggestId: "wsrLocationSuggest",
+    modelSuggestId: "wsrModelSuggest",
+    serialSuggestId: "wsrSerialSuggest",
+
+    contactPersonId: "wsr_contactPerson",
+    contactNumberId: "wsr_contactNumber",
+    emailId: "wsr_email",
+    machineStatusId: "wsr_machineStatus",
+
+    mcNoId: "wsr_mcNo",
+    inkTypeId: "wsr_inkType",
+    filterKitDueId: "wsr_filterKitDue"
+  });
+}
+
+
+function timeToMinutes(t){
+  if(!t) return null;
+  const [hh, mm] = String(t).split(":").map(Number);
+  if(Number.isNaN(hh) || Number.isNaN(mm)) return null;
+  return hh * 60 + mm;
+}
+function minutesToHHMM(mins){
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+}
+function diffTime(start, end){
+  const s = timeToMinutes(start);
+  const e = timeToMinutes(end);
+  if(s === null || e === null) return "";
+  let d = e - s;
+  if(d < 0) d += 24 * 60; // ✅ next day handle
+  return minutesToHHMM(d);
+}
+
+function setupAutoTimeCalc(){
+  const tS = document.getElementById("travelStart");
+  const tE = document.getElementById("travelEnd");
+  const tO = document.getElementById("travelTime");
+
+  const wS = document.getElementById("workStart");
+  const wE = document.getElementById("workEnd");
+  const wO = document.getElementById("workTime");
+
+  function updateTravel(){ if(tO) tO.value = diffTime(tS?.value, tE?.value); }
+  function updateWork(){ if(wO) wO.value = diffTime(wS?.value, wE?.value); }
+
+  [tS,tE].forEach(el=>{
+    if(!el) return;
+    el.addEventListener("input", updateTravel);
+    el.addEventListener("change", updateTravel);
+  });
+  [wS,wE].forEach(el=>{
+    if(!el) return;
+    el.addEventListener("input", updateWork);
+    el.addEventListener("change", updateWork);
+  });
+  
+
+
+  updateTravel();
+  updateWork();
+}
+
+
+
+/* ===========================
+   INIT
+=========================== */
+window.onload = function(){
+  const engName = document.getElementById("engName");
+  const zoneName = document.getElementById("zoneName");
+  const sbEngineer = document.getElementById("sbEngineer");
+  const sbZone = document.getElementById("sbZone");
+
+  if(engName) engName.textContent = SERVER_ENGINEER || "-";
+  if(zoneName) zoneName.textContent = SERVER_ZONE || "-";
+  if(sbEngineer) sbEngineer.textContent = SERVER_ENGINEER || "-";
+  if(sbZone) sbZone.textContent = SERVER_TEAM || "-";
+
+  refillReadonly();
+  toggleSmsDaysInput();
+  loadAmcDonut();
+  setupMonthYear();
+  loadWeeklyDonut();
+  loadKpis();
+  loadClusterKpi();
+  applyRoleAccess(SERVER_ROLENAME);
+  fillVisitCode2();
+  loadWsrDonutMonth();
+
+  // ✅ autosuggest start
+  ensureSuggestReady();
+  setupAutoTimeCalc();
+};
+
+function openUserCreate(btn){
+  showSection('usercreateSection', btn);
+  loadUsers();
+}
+/* ===========================
+   WSR FORM SUBMIT
+=========================== */
+document.addEventListener("DOMContentLoaded", function(){
+
+  const wsrForm = document.getElementById("wsrForm");
+  if(!wsrForm) return;
+
+  wsrForm.addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    showLoading("Submitting WSR...");
+    try{
+      const formData = new FormData(this);
+
+      const res = await fetch("/api/wsr", {
+        method: "POST",
+        body: formData
+      });
+
+      const out = await res.json();
+      alert(out.message || "WSR Submitted Successfully");
+      
+
+      if(res.ok){
+        const again = confirm(
+          (out.message || "WSR Submitted Successfully") +
+          "\n\nDo you want to add another WSR for the same customer?"
+        );
+        if (!again) {
+          clearWsrForm();
+          loadWsrDonutMonth();
+          loadReport();
+        }
+        
+      }
+
+    }catch(err){
+      alert("WSR Submit Error");
+    }finally{
+      hideLoading();
+    }
+  });
+
+});
+
+
+/* ===========================
+   WEEKLY PLAN FORM SUBMIT
+=========================== */
+document.addEventListener("DOMContentLoaded", function(){
+
+  const wpForm = document.getElementById("weeklyPlanForm");
+  if(!wpForm) return;
+
+  wpForm.addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    showLoading("Saving Weekly Plan...");
+    try{
+      const formData = new FormData(this);
+
+      const res = await fetch("/api/weeklyplan", {
+        method: "POST",
+        body: formData
+      });
+
+      const out = await res.json();
+      alert(out.message || "Weekly Plan Saved Successfully");
+
+      if(res.ok){
+        const again = confirm(
+          (out.message || " Weekly Plan Saved Successfully") +
+          "\n\nDo you want to add another paning for the same customer?"
+        );
+        if (!again) {
+          this.reset();
+          refillReadonly();
+          loadWeeklyDonut();
+          loadWeeklyPlanReport();          
+        }        
+      }
+
+    }catch(err){
+      alert("Weekly Plan Save Error");
+    }finally{
+      hideLoading();
+    }
+  });
+
+});
+
+function clearWsrForm(){
+
+  const form = document.getElementById("wsrForm");
+
+  // Save values before reset
+  const zone = document.getElementById("wsr_zone").value;
+  const engineer = document.getElementById("wsr_engineer").value;
+  const monthPick = document.getElementById("monthYearPick").value;
+  const monthText = document.getElementById("monthYearText").value;
+
+  // Reset full form
+  form.reset();
+
+  // Restore protected fields
+  document.getElementById("wsr_zone").value = zone;
+  document.getElementById("wsr_engineer").value = engineer;
+  document.getElementById("monthYearPick").value = monthPick;
+  document.getElementById("monthYearText").value = monthText;
+
+}
+function clearWeeklyPlanForm(){
+
+  const form = document.getElementById("weeklyPlanForm");
+
+  // Save protected fields
+  const zone = document.getElementById("wp_zone").value;
+  const engineer = document.getElementById("wp_engineer").value;
+
+  // Reset whole form
+  form.reset();
+
+  // Restore protected fields
+  document.getElementById("wp_zone").value = zone;
+  document.getElementById("wp_engineer").value = engineer;
+
+  // Optional: clear cascades if needed
+  if (typeof resetWpCascades === "function") {
+      resetWpCascades();
+  }
+}
+
+function openCustomerReport(){
+
+  // ✅ Sirf Customer Summary Section open karega
+  showSection("customerSummarySection", null);
+
+  const rows = INSTALLBASE_CACHE?.rows || [];
+  const tbody = document.getElementById("customerSummaryBody");
+  const countEl = document.getElementById("customerSummaryCount");
+
+  if(!tbody) return;
+
+  tbody.innerHTML = "";
+
+  const map = new Map();
+
+  rows.forEach(r=>{
+    const customer = (getCustomerFromRow(r) || "").trim();
+    const location = (getLocationFromRow(r) || "").trim();
+
+    if(!customer) return;
+
+    const key = customer.toLowerCase();
+
+    if(!map.has(key)){
+      map.set(key, {
+        customer,
+        location
+      });
+    }
+  });
+
+  const list = Array.from(map.values());
+
+  if(countEl) countEl.textContent = list.length;
+
+  list.forEach(item=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(item.customer)}</td>
+      <td>${escapeHtml(item.location)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ==========================
+// CLUSTER SUMMARY SAFE LOAD
+// ==========================
+
+async function loadExpiry(type) {
+
+    const engineer = document.getElementById("engineerFilter")?.value || "";
+
+    const res = await fetch(`/api/expiry/filter?type=${type}&engineer=${engineer}`);
+    const data = await res.json();
+
+    let html = "";
+
+    data.forEach(row => {
+
+        const days = parseInt(row.REM_DAYS);
+
+        let bg = "";
+
+        if (!isNaN(days)) {
+
+            if (days < 0) {
+                bg = "#b71c1c";        // expired
+            }
+            else if (days < 3) {
+                bg = "#ffcccc";        // red
+            }
+            else if (days >= 3 && days <= 6) {
+                bg = "#fff3cd";        // yellow
+            }
+            else if (days > 6 && days <= 15) {
+                bg = "#d4edda";        // green
+            }
+        }
+
+        html += `
+        <tr style="background:${bg}; color:${days < 0 ? 'white' : 'black'};">
+            <td>${row.ENGINEER || ""}</td>
+            <td>${row.CUSTOMER_NAME || ""}</td>
+            <td>${row.MC_SERIAL_NO || ""}</td>
+            <td>${formatDate(row.EXPIRY_DATE)}</td>
+            <td style="font-weight:bold;">${days}</td>
+        </tr>
+        `;
+    });
+
+    document.getElementById("expiryTableBody").innerHTML = html;
+}
+
+
+function openFilePicker() {
+    document.getElementById("excelFileInput").click();
+}
+
+
+function uploadExcel(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("excel_file", file);
+
+    const box = document.getElementById("SMSUploadProgressBox");
+    const bar = document.getElementById("SMSUploadProgressBar");
+    const btn = document.getElementById("btnupload");
+    const spinner = document.getElementById("loadingSpinner");
+
+    // 🔥 UI Start
+    btn.disabled = true;
+    box.style.display = "block";
+    spinner.style.display = "flex";
+    bar.style.width = "0%";
+    bar.innerText = "0%";
+
+    // Fake smooth progress animation
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        if (progress < 90) {
+            progress += 5;
+            bar.style.width = progress + "%";
+            bar.innerText = progress + "%";
+        }
+    }, 200);
+
+    fetch("/api/sms/upload", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        clearInterval(progressInterval);
+
+        // Complete progress
+        bar.style.width = "100%";
+        bar.innerText = "100%";
+
+        spinner.style.display = "none";
+        btn.disabled = false;
+
+        if (data.error) {
+            alert("Error: " + data.error);
+        } else {
+            alert(data.message || "Uploaded Successfully");
+        }
+
+        setTimeout(() => {
+            box.style.display = "none";
+            location.reload();
+        }, 800);
+
+    })
+    .catch(error => {
+
+        clearInterval(progressInterval);
+
+        spinner.style.display = "none";
+        btn.disabled = false;
+        box.style.display = "none";
+
+        alert("Upload Failed");
+        console.error(error);
+    });
+}
+</script>
+<script>
+
+
+function formatDate(dateString) {
+    if (!dateString) return "";
+
+    const d = new Date(dateString);
+
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+
+    return `${day}-${month}-${year}`;
+}
+function loadExpiry(type, btn) {
+
+    // Active button highlight
+    document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active');
+    });
+    if (btn) btn.classList.add('active');
+
+    fetch(`/api/expiry/filter?type=${type}`)
+        .then(res => res.json())
+        .then(data => {
+
+            const container = document.getElementById("expiryTableContainer");
+
+            if (!data || data.length === 0) {
+                container.innerHTML =
+                    "<p style='margin-top:10px;'>No Data Found</p>";
+                return;
+            }
+
+            let html = `
+            <table id="engineerTable" class="display"tyle="width:100%;border-collapse:collapse;margin-top:15px;">
+                <thead>
+                    <tr style="background:#0b2a55;color:white;">
+                        <th style="padding:8px;">Engineer</th>
+                        <th style="padding:8px;">Customer</th>
+                        <th style="padding:8px;">Machine SL</th>
+                        <th style="padding:8px;">Expiry Date</th>
+                        <th style="padding:8px;">Days</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            data.forEach(row => {
+
+                const days = parseInt(row.REM_DAYS);
+                let bg = "";
+                let textColor = "black";
+
+                if (!isNaN(days)) {
+
+                    if (days < 0) {
+                        bg = "#7f1d1d";
+                        textColor = "white";
+                    }
+                    else if (days <= 2) {
+                        bg = "#ef4444";
+                        textColor = "white";
+                    }
+                    else if (days >= 3 && days <= 6) {
+                        bg = "#facc15";
+                        textColor = "black";
+                    }
+                    else if (days >= 7 && days <= 15) {
+                        bg = "#16a34a";
+                        textColor = "white";
+                    }
+                }
+
+                html += `
+                <tr style="background:${bg}; color:${textColor}; font-weight:600;">
+                    <td style="padding:8px;">${row.ENGINEER || ""}</td>
+                    <td style="padding:8px;">${row.CUSTOMER_NAME || ""}</td>
+                    <td style="padding:8px;">${row.MC_SERIAL_NO || ""}</td>
+                    <td style="padding:8px;">${formatDate(row.EXPIRY_DATE)}</td>
+                    <td style="padding:8px;font-weight:bold;">
+                        ${!isNaN(days) ? days : ""}
+                    </td>
+                </tr>
+                `;
+            });
+
+            html += "</tbody></table>";
+            container.innerHTML = html;
+
+            // Destroy old table if exists
+            if ($.fn.DataTable.isDataTable('#engineerTable')) {
+              $('#engineerTable').DataTable().destroy();
+            }
+            // Initialize DataTable
+            var table = $('#engineerTable').DataTable({
+              pageLength: 25,
+              orderCellsTop: true,
+              fixedHeader: true,
+              order: [[4, 'asc']],   
+              // 👈 Days column (index 4) always small → big
+              columnDefs: [
+                {
+                  targets: 4,
+                  type: 'num'        // 👈 force numeric sorting
+                }
+              ]
+            });
+            // -------- Engineer Multi Filter --------
+            var engineerColumn = table.column(0);
+            var engineerSelect = $('<select multiple style="width:100%"></select>')     .appendTo($(engineerColumn.header()).empty())
+            .on('change', function () {
+              var selected = $(this).val();
+              if (selected && selected.length > 0) {
+                var regex = selected.join('|');
+                engineerColumn.search(regex, true, false).draw();
+              } else {
+                engineerColumn.search('').draw();
+              }
+            });
+            engineerColumn.data().unique().sort().each(function (d) {
+              engineerSelect.append('<option value="'+d+'">'+d+'</option>');
+            });
+            engineerSelect.select2({
+              placeholder: "Select Engineer"
+            });
+            // -------- Days Multi Filter --------
+            var daysColumn = table.column(4);
+            var daysSelect = $('<select multiple style="width:100%"></select>')   .appendTo($(daysColumn.header()).empty())
+            .on('change', function () {
+              var selected = $(this).val();
+              if (selected && selected.length > 0) {
+                var regex = selected.join('|');
+                daysColumn.search(regex, true, false).draw();
+              } else {
+                daysColumn.search('').draw();
+              }
+            });
+            daysColumn.data().unique().sort().each(function (d) {
+              daysSelect.append('<option value="'+d+'">'+d+'</option>');
+            });
+            daysSelect.select2({
+              placeholder: "Select Days"
+            });
+        })
+        .catch(err => {
+            console.error("Expiry Load Error:", err);
+        });
+}
+
+async function openMcStatusDetails(status){
+
+  showSection("mcStatusSection", null);   // 🔥 Proper section switch
+
+  showLoading("Loading " + status + " machines...");
+
+  try{
+    const res = await fetch(`/api/installbase/by-mc-status?status=${encodeURIComponent(status)}`);
+    const data = await res.json();
+
+    if(!res.ok || data.error){
+      alert("Error loading data");
+      return;
+    }
+
+    document.getElementById("mcStatusTitle").innerText = status + " Machines";
+
+    const holder = document.getElementById("mcStatusTable");
+    holder.innerHTML = "";
+    holder.appendChild(renderTable(data.columns, data.rows));
+
+  }catch(e){
+    console.error(e);
+  }finally{
+    hideLoading();
+  }
+}
+
+
+async function openActiveStatusDetails(status){
+
+  showSection("mcStatusSection", null);
+  showLoading("Loading " + status + " InstallBase...");
+
+  try{
+
+    let url = "/api/installbase/by-active-status";
+
+    if(status !== "ALL"){
+      url += "?status=" + encodeURIComponent(status);
+    }
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(!res.ok || data.error){
+      alert("Error loading data");
+      return;
+    }
+
+    // Set Title
+    document.getElementById("mcStatusTitle").innerText =
+      status === "ALL"
+        ? "All InstallBase"
+        : status + " InstallBase";
+
+    const holder = document.getElementById("mcStatusTable");
+
+    // 🔥 Destroy existing DataTable properly BEFORE clearing
+    if ($.fn.DataTable.isDataTable('#mcStatusDataTable')) {
+      $('#mcStatusDataTable').DataTable().clear().destroy();
+    }
+
+    holder.innerHTML = "";
+
+    // Render fresh table
+    const table = renderTable(data.columns, data.rows);
+    holder.appendChild(table);
+
+    // 🔥 Initialize DataTable AFTER appending
+    $('#mcStatusDataTable').DataTable({
+      pageLength: 25,
+      orderCellsTop: true,
+      fixedHeader: true,
+      responsive: true,
+      autoWidth: false,
+      searching: true,
+      lengthChange: true ,
+
+      dom: '<"dt-top"f l>rt<"dt-bottom"i p>'
+    });
+
+  }catch(e){
+    console.error("InstallBase Load Error:", e);
+    alert("Something went wrong while loading data.");
+  }finally{
+    hideLoading();
+  }
+}
+
+function initCommonDataTable(tableId){
+
+    if ($.fn.DataTable.isDataTable('#' + tableId)) {
+        $('#' + tableId).DataTable().clear().destroy();
+    }
+
+    $('#' + tableId).DataTable({
+        pageLength: 25,
+        searching: true,
+        lengthChange: true,
+        ordering: true,
+        info: true,
+        paging: true,
+        autoWidth: false,
+        responsive: true,
+
+        dom: '<"dt-top"f l>rt<"dt-bottom"i p>'
+    });
+}
+
+
+
+function openInstallFilePicker() {
+    document.getElementById("installExcelFileInput").click();
+}
+
+
+function uploadInstallExcel(input) {
+
+    if (!input.files.length) return;
+
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append("excel_file", file);
+
+    const box = document.getElementById("installUploadProgressBox");
+    const bar = document.getElementById("installUploadProgressBar");
+    const btn = document.getElementById("btnInstallUpload");
+    const spinner = document.getElementById("loadingSpinner");
+
+    // Disable button + show spinner
+    btn.disabled = true;
+    spinner.style.display = "flex";
+
+    box.style.display = "block";
+    bar.style.width = "0%";
+    bar.innerText = "0%";
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/installbase/excel-upload", true);
+
+    xhr.upload.onprogress = function (e) {
+        if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            bar.style.width = percent + "%";
+            bar.innerText = percent + "%";
+        }
+    };
+
+    xhr.onload = function () {
+
+        spinner.style.display = "none";
+        btn.disabled = false;
+
+        if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+
+            bar.style.width = "100%";
+            bar.innerText = "Completed ✔";
+
+            alert(
+                "✅ Upload Success\n\n" +
+                "Inserted: " + data.inserted +
+                "\nSkipped Duplicates: " + data.skipped_duplicates
+            );
+
+            openMaster();
+
+        } else {
+            alert("❌ Upload Failed");
+        }
+
+        setTimeout(() => {
+            box.style.display = "none";
+        }, 1500);
+
+        input.value = "";
+    };
+
+    xhr.onerror = function () {
+        spinner.style.display = "none";
+        btn.disabled = false;
+        alert("❌ Upload Error");
+        box.style.display = "none";
+        input.value = "";
+    };
+
+    xhr.send(formData);
+}
+
+
+// ==========================
+// TRANSPORT AUTO CALCULATION
+// ==========================
+
+function handleTransportChange(){
+  const mode = document.getElementById("modeOfTransport").value;
+  const bikeBox = document.getElementById("bikeExtraBox");
+
+  if(mode === "Bike"){
+    bikeBox.style.display = "block";
+  } else {
+    bikeBox.style.display = "none";
+    document.getElementById("perKmRate").value = "";
+    calculateExpense();
+  }
+}
+
+function calculateExpense(){
+
+  const distance = parseFloat(document.getElementById("distanceKM").value) || 0;
+  const rate = parseFloat(document.getElementById("perKmRate").value) || 0;
+
+  const total = distance * rate;
+
+  document.getElementById("expectedExpense").value =
+    total > 0 ? total : "";
+}
+
+// Auto calculate when distance changes
+document.getElementById("distanceKM").addEventListener("input", calculateExpense);
+
+
+</script>
+
+
+<div id="loadingSpinner" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.4);
+    z-index:9999;
+    justify-content:center;
+    align-items:center;
+">
+
+    <div style="
+        background:white;
+        padding:30px 50px;
+        border-radius:10px;
+        text-align:center;
+    ">
+        <div class="spinner-border text-primary"></div>
+        <div style="margin-top:15px;">
+            Uploading... Please wait
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
