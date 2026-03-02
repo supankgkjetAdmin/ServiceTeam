@@ -1650,7 +1650,7 @@ def _wsr_payload_to_db(cols, payload: dict):
         "visitDate": "Visit Date",
         "travelStart": "Travel Start (HH:MM)",
         "travelEnd": "Travel End (HH:MM)",
-        "travelTime": "TRAVE TIME",
+        "travelTime": "TRAVEL TIME",
         "workStart": "Work Start (HH:MM)",
         "workEnd": "Work End (HH:MM)",
         "workTime": "WORK TIME",
