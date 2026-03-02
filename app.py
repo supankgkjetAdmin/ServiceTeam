@@ -1638,7 +1638,7 @@ def _wsr_payload_to_db(cols, payload: dict):
         "callLoggedDate": "Call Logged Date",
         "problemReported": "Problem reported",
         
-        "amcStatus": "Machine Status",
+        "machineStatus": "Machine Status",
         "visitCode1": "Visit Code 1",
         "visitCode2": "Visit Code 2",
         "printerModel": "Printer Model",
