@@ -1324,7 +1324,7 @@ function loadKpis(){
       // Pending
       document.getElementById("kpiPending").textContent = k.pending ?? 0;
       
-      document.getElementById("kpiBreakdownPending").textContent = b.pending ?? 0;
+      document.getElementById("kpiBreakdownPending").textContent = k.pending ?? 0;
 
      
 
@@ -2911,14 +2911,15 @@ window.onload = function(){
   if(zoneName) zoneName.textContent = SERVER_ZONE || "-";
   if(sbEngineer) sbEngineer.textContent = SERVER_ENGINEER || "-";
   if(sbZone) sbZone.textContent = SERVER_TEAM || "-";
+  loadKpis();
+  loadClusterKpi();
 
   refillReadonly();
   toggleSmsDaysInput();
   loadAmcDonut();
   setupMonthYear();
   loadWeeklyDonut();
-  loadKpis();
-  loadClusterKpi();
+  
   applyRoleAccess(SERVER_ROLENAME);
   fillVisitCode2();
   loadWsrDonutMonth();
