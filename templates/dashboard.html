@@ -454,7 +454,7 @@
             </div>
           
             <div class="card">
-              <div class="kpi" id="kpiPending">0</div>
+              <div class="kpi" id="kpiBreakdownPending">0</div>
               <div class="label">Breakdown Task Pending</div>
             </div>
             <div class="card" style="cursor:pointer;"
@@ -1323,6 +1323,8 @@ function loadKpis(){
 
       // Pending
       document.getElementById("kpiPending").textContent = k.pending ?? 0;
+      
+      document.getElementById("kpiBreakdownPending").textContent = k.pending ?? 0;
 
      
 
