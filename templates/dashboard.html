@@ -346,22 +346,21 @@
                 onclick="showSection('dashboardSection', this)">🏠 Dashboard</button>
 
         <button id="btnWsr" data-roles="Manager,Team Leader,User"
-                onclick="showSection('wsrSection', this)">📚 WSR Report</button>
+                onclick="window.location.href='/wsr'">📚 WSR Report</button>
 
         <button id="btnReport" data-roles="Admin,Manager,Team Leader,User,Sales Cordinator"
                 onclick="showSection('reportSection', this); loadReport();">📋 Report View</button>
 
         <button id="btnWeeklyPlan" data-roles="Manager,Team Leader,User"
-                onclick="showSection('weeklyPlanSection', this);">📅 Weekly Plan</button>
+                onclick="window.location.href='/weekly'">📅 Weekly Plan</button>
 
         <button id="btnWeeklyPlanView" data-roles="Admin,Manager,Team Leader,User,Sales Cordinator"
                 onclick="showSection('weeklyViewPlanSection', this); loadWeeklyPlanReport();">📊 Weekly Plan Report</button>
 
         <button id="btnMasterUpdate" data-roles="Admin,Manager,Team Leader" type="button"
-                onclick="window.open('/installbase/update','_blank','noopener');">📝 Master Installbase Update</button>
+                onclick="window.location.href='/installbaseForm'">📝 Master Installbase Update</button>
 
-        <button id="btnBreakdown" data-roles="Admin,Manager,Team Leader,User"
-                onclick="showSection('breakdownSection', this);">🛠 Breakdown Login</button>
+        <button onclick="window.location.href='/breakdown'"> 🛠 Breakdown Login</button>
 
         <button id="btnupload" data-roles="Admin,Manager,Team Leader,User"
                 onclick=openFilePicker()>👤 SMS ID Sheet Upload </button>
@@ -513,17 +512,21 @@
             </div>
           </div>
           <!-- ================= Expiry Filter Section ================= -->
-           <div style="margin:25px 0;">
-            <button onclick="loadExpiry('sms_15', this)" class="filter-btn">
+          <div style="margin:25px 0;">
+            
+            <button onclick="window.location.href='/sms?type=sms_15'" class="filter-btn">
               SMS (0-15 Days)
             </button>
-            <button onclick="loadExpiry('amc_60', this)" class="filter-btn">
+
+            <button onclick="window.location.href='/sms?type=amc_60'" class="filter-btn">
               AMC (Next 60 Days)
             </button>
-            <button onclick="loadExpiry('filter_60', this)" class="filter-btn">
+
+            <button onclick="window.location.href='/sms?type=filter_60'" class="filter-btn">
               Filter (Next 60 Days)
             </button>
-          </div>
+
+          </div>                   
           <div id="expiryTableContainer"></div>
           <!-- ========================================================= -->
         </div>

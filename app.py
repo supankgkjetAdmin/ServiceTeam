@@ -3305,6 +3305,115 @@ def installbase_by_active_status():
 
 
 
+# ===================== BREAKDOWN MODULE =====================
+
+@app.get("/breakdown")
+def breakdown_page():
+    if "user" not in session:
+        return redirect(url_for("home"))
+
+    return render_template(
+        "bdlgin.html",
+        engineer=session.get("engineer"),
+        zone=session.get("zone")
+    )
+
+
+@app.post("/api/breakdown")
+def save_breakdown():
+
+    if "user" not in session:
+        return jsonify({"ok": False, "error": "unauthorized"}), 401
+
+    data = request.get_json() or request.form.to_dict()
+
+    email = (data.get("email") or "").strip()
+    machine = (data.get("machine_model") or "").strip()
+    problem = (data.get("problem") or "").strip()
+
+    # AUTO SESSION
+    name = (session.get("engineer") or "").strip()
+    zone = (session.get("zone") or "").strip()
+
+    if not email or not problem:
+        return jsonify({"ok": False, "error": "Email & Problem required"}), 400
+
+    try:
+        with get_conn() as conn:
+            cur = conn.cursor()
+
+            # SAFE TICKET
+            cur.execute("SELECT ISNULL(MAX(Id),0)+1 FROM dbo.Breakdown")
+            next_id = cur.fetchone()[0]
+            ticket = f"BD-{next_id:04d}"
+
+            cur.execute("""
+                INSERT INTO dbo.Breakdown
+                (TicketNo, Email, Zone, Engineer, MachineModel, Problem, Status, CreatedAt)
+                VALUES (?, ?, ?, ?, ?, ?, 'Open', GETDATE())
+            """, (ticket, email, zone, name, machine, problem))
+
+            conn.commit()
+
+        return jsonify({"ok": True, "ticket": ticket})
+
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+# WSR HTML
+
+@app.get("/wsr")
+def wsr_page():
+    if "user" not in session:
+        return redirect(url_for("home"))
+
+    return render_template(
+        "wsrsub.html",
+        engineer=session.get("engineer"),
+        zone=session.get("zone")
+    )
+
+
+
+
+
+@app.get("/weekly")   # ✅ spelling fix
+def weekly_page():
+    if "user" not in session:
+        return redirect(url_for("home"))
+
+    return render_template(
+        "weeklysub.html",
+        engineer=session.get("engineer"),
+        zone=session.get("zone")
+    )
+
+@app.get("/installbaseForm")   # ✅ same as button
+def installbaseForm_page():
+    if "user" not in session:
+        return redirect(url_for("home"))
+
+    return render_template(
+        "installbaseForm.html",
+        engineer=session.get("engineer"),
+        zone=session.get("zone")
+    )
+
+
+@app.get("/sms")
+def sms_page():
+    if "user" not in session:
+        return redirect(url_for("home"))
+
+    type = request.args.get("type")   # 👈 ADD THIS
+
+    return render_template(
+        "SMSdays.html",
+        engineer=session.get("engineer"),
+        zone=session.get("zone"),
+        type=type   # 👈 PASS TO HTML
+    )
 
 # ===================== RUN =====================
 if __name__ == "__main__":

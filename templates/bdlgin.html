@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Service Breakdown Form</title>
+
+<style>
+body {font-family:'Segoe UI';background:#e0ecb2;margin:0;}
+
+.container {
+  max-width:900px;margin:30px auto;background:#e5ebcf;
+  padding:30px;border-radius:12px;
+  box-shadow:0 12px 30px rgba(238, 9, 9, 0.1);
+}
+
+h2{text-align:center;color:#df0808;}
+
+.section{margin-bottom:30px;}
+.section-title{font-weight:bold;margin-bottom:15px;border-bottom:1px solid #d0e3ee;}
+
+.row{display:flex;gap:25px;}
+.group{flex:1;margin-bottom:18px;}
+
+label{font-size:13px;color:#0a023a;}
+
+input,select,textarea{
+  width:100%;padding:10px;margin-top:6px;
+  border:1px solid #81c93e;border-radius:6px;
+  text-transform:uppercase;
+}
+
+/* 🔥 EMAIL LOWERCASE FIX */
+input[name="email"]{
+  text-transform:lowercase !important;
+}
+
+textarea{min-height:90px;}
+
+.btn{
+  width:100%;padding:12px;
+  background:linear-gradient(45deg,#ff4b2b,#ff416c);
+  color:white;border:none;border-radius:6px;
+}
+
+.relative{position:relative;}
+
+#suggestions{
+  position:absolute;top:100%;left:0;right:0;
+  background:white;border:1px solid #ccc;
+  z-index:9999;max-height:200px;overflow:auto;
+}
+
+#suggestions div{padding:8px;cursor:pointer;}
+#suggestions div:hover{background:#eee;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Service Breakdown Request</h2>
+
+<form id="form">
+
+<!-- BASIC -->
+<div class="section">
+<div class="section-title">Basic Information</div>
+
+<div class="row">
+<div class="group">
+<label>Engineer</label>
+<input value="{{ engineer }}" readonly>
+</div>
+
+<div class="group">
+<label>Zone</label>
+<input value="{{ zone }}" readonly>
+</div>
+</div>
+
+<div class="row">
+<div class="group">
+<label>Email *</label>
+<input name="email" required>
+</div>
+
+<div class="group">
+<label>Mobile *</label>
+<input name="mobile" required>
+</div>
+</div>
+
+<div class="row">
+<div class="group">
+<label>Territory *</label>
+<input name="territory" required>
+</div>
+
+<div class="group">
+<label>Logged Date *</label>
+<input type="date" name="logged_date" required>
+</div>
+</div>
+</div>
+
+<!-- CUSTOMER -->
+<div class="section">
+<div class="section-title">Customer Information</div>
+
+<div class="group relative">
+<label>Customer Name *</label>
+<input name="customer_name" id="customer" autocomplete="off" required>
+<div id="suggestions"></div>
+</div>
+
+<div class="row">
+<div class="group">
+<label>Serial No *</label>
+<input list="serial_list" name="serial_no" id="serial" placeholder="Select or Type Serial" required>
+<datalist id="serial_list"></datalist>
+</div>
+<div class="group">
+<label>Location</label>
+<input name="location">
+</div>
+</div>
+<div class="row">
+<div class="group">
+<label>Contact Person *</label>
+<input name="contact_person" required>
+</div>
+
+
+<div class="group">
+<label>Contact Mobile *</label>
+<input name="contact_mobile" required>
+</div>
+</div>
+
+<div class="row">
+
+<div class="group">
+<label>MC Model</label>
+<input name="mc_model">
+</div>
+
+<div class="group">
+<label>MC Status</label>
+<select name="mc_status">
+<option>AMC</option>
+<option>NON AMC</option>
+<option>WARRANTY</option>
+</select>
+</div>
+</div>
+<div class="row">
+<div class="group">
+<label>Visit Type</label>
+<select name="visit_type">
+<option>BREAKDOWN</option>
+<option>REFURBISHMENT</option>
+<option>OTHERS-VISIT</option>
+</select>
+</div>
+
+
+<div class="group">
+<label>Visit Sub-Type</label>
+<select name="visit_sub_type">
+<option>FIRST-VISIT</option>
+<option>CARRYOVER</option>
+<option>REPEAT BD</option>
+</select>
+</div>
+</div>
+
+<!-- PROBLEM -->
+<div class="section">
+<div class="section-title">Problem Details</div>
+
+<div class="group">
+<label>Problem Reported *</label>
+<textarea name="problem" required></textarea>
+</div>
+</div>
+
+<button class="btn">Submit</button>
+</form>
+</div>
+
+<script>
+const customerInput=document.getElementById("customer");
+const suggestionBox=document.getElementById("suggestions");
+const serialInput=document.getElementById("serial");
+const serialList=document.getElementById("serial_list");
+
+// 🔥 UPPERCASE EXCEPT EMAIL
+document.addEventListener("input",e=>{
+ let el=e.target;
+ if((el.tagName==="INPUT"||el.tagName==="TEXTAREA") && el.name!=="email"){
+   el.value=el.value.toUpperCase();
+ }
+});
+
+// 🔥 EMAIL LOWERCASE
+document.querySelector('[name="email"]').addEventListener("input",function(){
+ this.value=this.value.toLowerCase();
+});
+
+// ================= CUSTOMER SUGGEST =================
+customerInput.addEventListener("input",async()=>{
+ let q=customerInput.value.trim();
+ if(q.length<2){suggestionBox.style.display="none";return;}
+
+ let res=await fetch(`/api/installbase/customer_suggest?q=${q}`);
+ let data=await res.json();
+ let list=data.items||[];
+
+ suggestionBox.innerHTML="";
+ list.forEach(name=>{
+   let div=document.createElement("div");
+   div.textContent=name;
+   div.onclick=()=>{
+     customerInput.value=name;
+     suggestionBox.style.display="none";
+     loadSerials(name);
+   };
+   suggestionBox.appendChild(div);
+ });
+
+ suggestionBox.style.display=list.length?"block":"none";
+});
+
+// 🔥 MANUAL LOAD
+customerInput.addEventListener("blur",()=>{
+ if(customerInput.value.trim()){
+   loadSerials(customerInput.value.trim());
+ }
+});
+
+// ================= LOAD SERIAL =================
+async function loadSerials(customer){
+ let res=await fetch(`/api/installbase/rows?customer=${customer}`);
+ let data=await res.json();
+ serialList.innerHTML="";
+ if(!data.ok) return;
+
+ data.rows.forEach(item=>{
+   let opt=document.createElement("option");
+   opt.value=item.serial_no;
+   opt.dataset.model=item.model||"";
+   opt.dataset.location=item.location||"";
+   opt.dataset.contact=item.contact_person||"";
+   opt.dataset.mobile=item.contact_no||"";
+   serialList.appendChild(opt);
+ });
+}
+
+// ================= AUTO FILL =================
+serialInput.addEventListener("input",()=>{
+ let val=serialInput.value;
+ let options=serialList.options;
+ let found=false;
+
+ for(let i=0;i<options.length;i++){
+   if(options[i].value===val){
+     let o=options[i];
+     document.querySelector('[name="mc_model"]').value=o.dataset.model||"";
+     document.querySelector('[name="location"]').value=o.dataset.location||"";
+     document.querySelector('[name="contact_person"]').value=o.dataset.contact||"";
+     document.querySelector('[name="contact_mobile"]').value=o.dataset.mobile||"";
+     found=true;
+     break;
+   }
+ }
+
+ if(!found){
+   document.querySelector('[name="mc_model"]').value="";
+   document.querySelector('[name="location"]').value="";
+   document.querySelector('[name="contact_person"]').value="";
+   document.querySelector('[name="contact_mobile"]').value="";
+ }
+});
+
+// ================= SUBMIT =================
+document.getElementById("form").onsubmit=async(e)=>{
+ e.preventDefault();
+ let fd=new FormData(e.target);
+
+ let res=await fetch("/api/breakdown",{method:"POST",body:fd});
+ let data=await res.json();
+
+ if(data.ok){
+   alert("✅ Ticket Created: "+data.ticket);
+   e.target.reset();
+   serialList.innerHTML="";
+ }else{
+   alert("❌ "+data.error);
+ }
+};
+
+// 🔥 HIDE SUGGEST
+document.addEventListener("click",e=>{
+ if(!customerInput.contains(e.target)&&!suggestionBox.contains(e.target)){
+   suggestionBox.style.display="none";
+ }
+});
+</script>
+
+</body>
+</html>
