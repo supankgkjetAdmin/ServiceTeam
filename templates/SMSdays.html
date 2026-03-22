@@ -2625,12 +2625,13 @@ async function loadExpiry(type) {
 
         html += `
         <tr style="background:${bg}; color:${days < 0 ? 'white' : 'black'};">
-            <td>${row.DATE || ""}</td>
+            
             <td>${row.ENGINEER || ""}</td>
             <td>${row.CUSTOMER_NAME || ""}</td>
             <td>${row.MC_SERIAL_NO || ""}</td>
-            <td>${formatDate(row.EXPIRY_DATE)}</td>
+            <td>${row.DATE || ""}</td>            
             <td style="font-weight:bold;">${days}</td>
+            <td>${formatDate(row.EXPIRY_DATE)}</td>
         </tr>
         `;
     });
@@ -2754,12 +2755,13 @@ function loadExpiry(type, btn) {
             <table id="engineerTable" class="display"tyle="width:100%;border-collapse:collapse;margin-top:15px;">
                 <thead>
                     <tr style="background:#0b2a55;color:white;">
-                        <th style="padding:8px;">Date</th>
+                        
                         <th style="padding:8px;">Engineer</th>
                         <th style="padding:8px;">Customer</th>
                         <th style="padding:8px;">Machine SL</th>
-                        <th style="padding:8px;">Expiry Date</th>
+                        <th style="padding:8px;">Updated Date</th>                        
                         <th style="padding:8px;">Days</th>
+                        <th style="padding:8px;">Expiry Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -2793,14 +2795,16 @@ function loadExpiry(type, btn) {
 
                 html += `
                 <tr style="background:${bg}; color:${textColor}; font-weight:600;">
-                    <td style="padding:8px;">${formatDate(row.DATE)}</td>
+                    
                     <td style="padding:8px;">${row.ENGINEER || ""}</td>
                     <td style="padding:8px;">${row.CUSTOMER_NAME || ""}</td>
                     <td style="padding:8px;">${row.MC_SERIAL_NO || ""}</td>
-                    <td style="padding:8px;">${formatDate(row.EXPIRY_DATE)}</td>
+                    <td style="padding:8px;">${formatDate(row.DATE)}</td>
+                    
                     <td style="padding:8px;font-weight:bold;">
                         ${!isNaN(days) ? days : ""}
                     </td>
+                    <td style="padding:8px;">${formatDate(row.EXPIRY_DATE)}</td>
                 </tr>
                 `;
             });
