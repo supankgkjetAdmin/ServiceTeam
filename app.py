@@ -2950,6 +2950,8 @@ def api_expiry_filter():
 
                 query = """
                 SELECT 
+                    
+                    DATE,
                     ENGINEER,
                     CUSTOMER_NAME,
                     MC_SERIAL_NO,
@@ -2957,8 +2959,7 @@ def api_expiry_filter():
                     DATEDIFF(DAY, CAST(GETDATE() AS DATE), END_DAY) AS REM_DAYS
                 FROM dbo.sms
                 WHERE END_DAY IS NOT NULL
-                  AND DATEDIFF(DAY, CAST(GETDATE() AS DATE), END_DAY)
-                      BETWEEN 0 AND 15
+                 AND DATEDIFF(DAY, CAST(GETDATE() AS DATE), END_DAY) >= -10
                 """
 
                 params = []

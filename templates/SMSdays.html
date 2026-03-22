@@ -127,17 +127,17 @@
     table{  width:100%;min-width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px;}
 
     thead th{position:sticky;top:0;background:#0b2a55;color:#fff;padding:10px;text-align:left;white-space:nowrap;}
-    tbody td{border-top:1px solid var(--border);padding:10px;white-space:normal; word-break:break-word;overflow-wrap:anywhere; }
+    
+    tbody td{border-top:1px solid var(--border);padding:10px;white-space:nowrap;}
+    #expiryTableContainer{overflow-x:auto;}
+    #engineerTable{min-width:1200px;}
 
-    thead th:nth-child(6),
-    tbody td:nth-child(6){
-      width:550px;
-      max-width:550px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
 
+    #expiryTableContainer{overflow-x:auto;}
+    #engineerTable{min-width:1200px;table-layout:auto !important;}
+
+
+    
     .searchRow{
      display:flex;
      align-items:center;
@@ -315,6 +315,17 @@
       border: 1px solid var(--border);
       border-radius: 12px;
     }
+
+    @media (min-width:1024px){
+      #engineerTable th,
+      #engineerTable td{
+      white-space: nowrap !important;
+    }
+
+    #expiryTableContainer{overflow-x:auto;}
+    #engineerTable{min-width:1000px;}
+  }
+  
   </style>
 </head>
 
@@ -1180,7 +1191,17 @@ function renderTable(columns, rows) {
 
     columns.forEach(col => {
       const td = document.createElement("td");
-      td.textContent = row[col] ?? "";
+      let val = row[col] ?? "";
+      if(col === "DATE" || col === "EXPIRY_DATE"){
+        const d = new Date(val);
+        if(!isNaN(d)){
+          const day = String(d.getDate()).padStart(2,'0');
+          const mon = String(d.getMonth()+1).padStart(2,'0');
+          const yr  = d.getFullYear();
+          val = day + "-" + mon + "-" + yr;
+        }
+      }
+      td.textContent = val;
       tr.appendChild(td);
     });
 
@@ -2604,6 +2625,7 @@ async function loadExpiry(type) {
 
         html += `
         <tr style="background:${bg}; color:${days < 0 ? 'white' : 'black'};">
+            <td>${row.DATE || ""}</td>
             <td>${row.ENGINEER || ""}</td>
             <td>${row.CUSTOMER_NAME || ""}</td>
             <td>${row.MC_SERIAL_NO || ""}</td>
@@ -2706,6 +2728,8 @@ function formatDate(dateString) {
 
     return `${day}-${month}-${year}`;
 }
+
+
 function loadExpiry(type, btn) {
 
     // Active button highlight
@@ -2730,6 +2754,7 @@ function loadExpiry(type, btn) {
             <table id="engineerTable" class="display"tyle="width:100%;border-collapse:collapse;margin-top:15px;">
                 <thead>
                     <tr style="background:#0b2a55;color:white;">
+                        <th style="padding:8px;">Date</th>
                         <th style="padding:8px;">Engineer</th>
                         <th style="padding:8px;">Customer</th>
                         <th style="padding:8px;">Machine SL</th>
@@ -2768,6 +2793,7 @@ function loadExpiry(type, btn) {
 
                 html += `
                 <tr style="background:${bg}; color:${textColor}; font-weight:600;">
+                    <td style="padding:8px;">${formatDate(row.DATE)}</td>
                     <td style="padding:8px;">${row.ENGINEER || ""}</td>
                     <td style="padding:8px;">${row.CUSTOMER_NAME || ""}</td>
                     <td style="padding:8px;">${row.MC_SERIAL_NO || ""}</td>
