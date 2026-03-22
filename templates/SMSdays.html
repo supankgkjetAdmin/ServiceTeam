@@ -317,15 +317,17 @@
     }
 
     @media (min-width:1024px){
-      #engineerTable th,
-      #engineerTable td{
-      white-space: nowrap !important;
+      #engineerTable th,#engineerTable td{white-space: nowrap !important;}
+      #expiryTableContainer{overflow-x:auto;}
+      #engineerTable{min-width:1000px;}
+    } 
+    @media (max-width:768px){
+      .searchRow{flex-wrap:wrap;white-space:normal;overflow:visible; }
+      .filter-btn{width:100%;margin-bottom:8px;}
+      .dataTables_length,.dataTables_filter{width:100%;text-align:left !important;}
+      .dataTables_filter input{width:100% !important;margin-left:0 !important;}
     }
 
-    #expiryTableContainer{overflow-x:auto;}
-    #engineerTable{min-width:1000px;}
-  }
-  
   </style>
 </head>
 
