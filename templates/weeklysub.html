@@ -2203,13 +2203,18 @@ function setupCascadeForForm(cfg){
         const form = document.getElementById("weeklyPlanForm");
         if(!form) return;
 
-        form.elements["lastVisitDate"].value =
-          data.visit_date ? String(data.visit_date).split("T")[0] : "";
-          setVal("wp_tot", data.last_tot);
-          setVal("wp_pot", data.last_pot);
-          setVal("wp_ink", data.ink);
-          setVal("wp_solvent", data.solvent);
-          setVal("wp_cnc", data.cnc);
+        if (data.visit_date) {
+          const parts = String(data.visit_date).split("-");
+          if (parts.length === 3) {
+            form.elements["lastVisitDate"].value =
+            `${parts[2]}-${parts[1]}-${parts[0]}`;
+          }
+        }
+        setVal("wp_tot", data.last_tot);
+        setVal("wp_pot", data.last_pot);
+        setVal("wp_ink", data.ink);
+        setVal("wp_solvent", data.solvent);
+        setVal("wp_cnc", data.cnc);
 
 
       }catch(e){
@@ -2219,6 +2224,9 @@ function setupCascadeForForm(cfg){
 
 
     })();
+
+
+    
     // ===== FETCH SMS EXPIRY =====
     (async function(){
       try{

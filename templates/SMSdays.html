@@ -2783,15 +2783,15 @@ function loadExpiry(type, btn) {
                         bg = "#7f1d1d";
                         textColor = "white";
                     }
-                    else if (days <= 2) {
+                    else if (days <= 5) {
                         bg = "#ef4444";
                         textColor = "white";
                     }
-                    else if (days >= 3 && days <= 6) {
+                    else if (days >= 5 && days <= 10) {
                         bg = "#facc15";
                         textColor = "black";
                     }
-                    else if (days >= 7 && days <= 15) {
+                    else if (days >= 10 && days <= 50) {
                         bg = "#16a34a";
                         textColor = "white";
                     }
@@ -2834,18 +2834,25 @@ function loadExpiry(type, btn) {
                 }
               ]
             });
+
+
+            // -------- Engineer Multi Filter --------
             // -------- Engineer Multi Filter --------
             var engineerColumn = table.column(0);
-            var engineerSelect = $('<select multiple style="width:100%"></select>')     .appendTo($(engineerColumn.header()).empty())
+            var engineerSelect = $('<select multiple style="width:100%"></select>')
+            .appendTo($(engineerColumn.header()).empty())
             .on('change', function () {
               var selected = $(this).val();
               if (selected && selected.length > 0) {
                 var regex = selected.join('|');
-                engineerColumn.search(regex, true, false).draw();
+                engineerColumn.search(regex, true, false);
               } else {
-                engineerColumn.search('').draw();
+                engineerColumn.search('');
               }
+              // 🔥 auto ascending by Days
+              table.order([4, 'asc']).draw();
             });
+
             engineerColumn.data().unique().sort().each(function (d) {
               engineerSelect.append('<option value="'+d+'">'+d+'</option>');
             });
@@ -2853,17 +2860,22 @@ function loadExpiry(type, btn) {
               placeholder: "Select Engineer"
             });
             // -------- Days Multi Filter --------
+            // -------- Days Multi Filter --------
             var daysColumn = table.column(4);
-            var daysSelect = $('<select multiple style="width:100%"></select>')   .appendTo($(daysColumn.header()).empty())
+            var daysSelect = $('<select multiple style="width:100%"></select>')
+            .appendTo($(daysColumn.header()).empty())
             .on('change', function () {
               var selected = $(this).val();
               if (selected && selected.length > 0) {
                 var regex = selected.join('|');
-                daysColumn.search(regex, true, false).draw();
+                daysColumn.search(regex, true, false);
               } else {
-                daysColumn.search('').draw();
+                daysColumn.search('');
               }
+              // 🔥 keep auto ascending
+              table.order([4, 'asc']).draw();
             });
+
             daysColumn.data().unique().sort().each(function (d) {
               daysSelect.append('<option value="'+d+'">'+d+'</option>');
             });
