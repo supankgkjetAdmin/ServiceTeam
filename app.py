@@ -2575,138 +2575,117 @@ def month_cluster_details():
     if need:
         return need
 
-    engineer_filter = (request.args.get("engineer") or "").strip()
-    customer_filter = (request.args.get("customer") or "").strip()
-    status_filter   = (request.args.get("status") or "").strip().upper()
-    from_s = (request.args.get("from_date") or "").strip()
-    to_s   = (request.args.get("to_date") or "").strip()
+    status = (request.args.get("status") or "").upper()
 
     install_cols = _table_columns("dbo.InstallBase")
-    wsr_cols = _wsr_cols()
+    wsr_cols     = _table_columns("dbo.WSR")
 
-    serial_ib = _find_col(install_cols, must_contain=["serial"])
-    engineer_col = _find_col(install_cols, must_contain=["service", "engr"])
-    customer_col = _find_col(install_cols, must_contain=["customer", "name"])
-    plan_col = _find_col(install_cols, must_contain=["cluster", "visit", "plan"])
-    active_col = _find_col(install_cols, must_contain=["active", "status"])
+    serial_i = _find_col(install_cols, must_contain=["serial"])
+    cust_i   = _find_col(install_cols, must_contain=["customer"])
+    loc_i    = _find_col(install_cols, must_contain=["location"])
 
-    serial_wsr = _find_col(wsr_cols, must_contain=["serial"])
-    visit_date_col = _wsr_date_col(wsr_cols)
-    visit_code_col = _wsr_visit_code1_col(wsr_cols)
-
-    if not all([serial_ib, engineer_col, customer_col, plan_col,
-                serial_wsr, visit_date_col, visit_code_col]):
-        return jsonify({"error": "Required columns missing"}), 400
-
-    plan_date_expr = f"""
-        COALESCE(
-            TRY_CONVERT(date, {_qcol(plan_col)}, 23),
-            TRY_CONVERT(date, {_qcol(plan_col)}, 105),
-            TRY_CONVERT(date, {_qcol(plan_col)})
-        )
-    """
-
-    visit_date_expr = f"""
-        COALESCE(
-            TRY_CONVERT(date, w.{_qcol(visit_date_col)}, 23),
-            TRY_CONVERT(date, w.{_qcol(visit_date_col)}, 105),
-            TRY_CONVERT(date, w.{_qcol(visit_date_col)})
-        )
-    """
-
-    base_where, base_params = _installbase_scope_where(install_cols)
-
-    where_parts = []
-    params = []
-
-    if base_where:
-        where_parts.append(base_where.replace(" WHERE ", "", 1))
-        params += base_params
-
-    where_parts.append(f"{_cmp_ci_trim(active_col)} = 'ACTIVE'")
-
-    # ✅ DATE FILTER (NEW FIX)
-    fd = _parse_iso_date(from_s) if from_s else None
-    td = _parse_iso_date(to_s) if to_s else None
-
-    # 🔥 FORCE CURRENT MONTH FILTER (Cluster Visit Plan)
-    where_parts.append(
-        f"{plan_date_expr} >= DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)"
-    )
-    where_parts.append(
-        f"{plan_date_expr} < DATEADD(month,1,DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()),1))"
+    # 🔥 IMPORTANT: cluster visit plan column detect
+    cluster_visit_plan_i = _find_col(
+        install_cols,
+        aliases=["cluster_visit_plan","Cluster Visit Plan"],
+        must_contain=["cluster","visit","plan"]
     )
 
-    if fd:
-        where_parts.append(f"{plan_date_expr} >= ?")
-        params.append(fd)
+    serial_w = _find_col(wsr_cols, must_contain=["serial"])
+    visit_dt = _find_col(wsr_cols, must_contain=["visit","date"])
 
-    if td:
-        where_parts.append(f"{plan_date_expr} <= ?")
-        params.append(td)
+    if not serial_i or not serial_w:
+        return _json_err("Serial column missing")
 
-    if engineer_filter and engineer_filter != "All":
-        where_parts.append(f"{_cmp_ci_trim(engineer_col)} = UPPER(?)")
-        params.append(engineer_filter)
+    # 🔥 define plan_date_expr (VERY IMPORTANT)
+    plan_date_expr = f"i.{_qcol(cluster_visit_plan_i)}"
 
-    if customer_filter and customer_filter != "All":
-        where_parts.append(f"CAST({_qcol(customer_col)} AS NVARCHAR(300)) LIKE ?")
-        params.append(f"%{customer_filter}%")
+    # 4 month cycle start Dec
+    today = date.today()
+    m = today.month
 
-    where_sql = " WHERE " + " AND ".join(where_parts)
+    if m in (12,1,2):
+        start = date(today.year if m==12 else today.year-1,12,1)
+        end   = date(today.year if m!=12 else today.year+1,3,1)
 
-    sql = f"""
-        SELECT 
-            i.{_qcol(engineer_col)} AS engineer,
-            i.{_qcol(customer_col)} AS customer,
-            i.{_qcol(serial_ib)} AS serial_no,
-            CONVERT(varchar(10), {plan_date_expr}, 23) AS cluster_visit_plan,
-            CASE               
-                WHEN EXISTS (
-                    SELECT 1 
-                    FROM dbo.WSR w
-                    WHERE UPPER(LTRIM(RTRIM(w.{_qcol(serial_wsr)}))) =
-                        UPPER(LTRIM(RTRIM(i.{_qcol(serial_ib)})))
-                    AND UPPER(LTRIM(RTRIM(w.{_qcol(visit_code_col)}))) = 'CLUSTER'
-                    {f"AND {visit_date_expr} >= ?" if fd else ""}
-                    {f"AND {visit_date_expr} <= ?" if td else ""}
-                )
-                THEN 'COMPLETED'
-                ELSE 'PENDING'            
-            END AS status
-        FROM dbo.InstallBase i
-        {where_sql}
-        ORDER BY cluster_visit_plan ASC
-    """
+    elif m in (3,4,5,6):
+        start = date(today.year,3,1)
+        end   = date(today.year,7,1)
 
-    if fd:
-        params.append(fd)
-    if td:
-        params.append(td)
-
-    if status_filter in ["COMPLETED", "PENDING"]:
-        sql = f"SELECT * FROM ({sql}) x WHERE UPPER(status) = ?"
-        params.append(status_filter)
+    else:
+        start = date(today.year,7,1)
+        end   = date(today.year,12,1)
 
     try:
         with get_conn() as conn:
             cur = conn.cursor()
-            cur.execute(sql, params)
+
+            # ---------------- COMPLETED ----------------
+            if status == "COMPLETED":
+
+                sql = f"""
+                SELECT 
+                    i.{_qcol(cust_i)} as customer,
+                    i.{_qcol(loc_i)}  as location,
+                    i.{_qcol(serial_i)} as serial,
+
+                    CONVERT(varchar(10), {plan_date_expr}, 23) AS cluster_visit_plan,
+
+                    
+                    'COMPLETED' as status
+                FROM dbo.InstallBase i
+                JOIN dbo.WSR w
+                  ON UPPER(i.{_qcol(serial_i)}) = UPPER(w.{_qcol(serial_w)})
+                WHERE w.{_qcol(visit_dt)} >= ?
+                AND   w.{_qcol(visit_dt)} < ?
+                """
+
+                cur.execute(sql,(start,end))
+
+
+            # ---------------- PENDING ----------------
+            else:
+
+                sql = f"""
+                SELECT 
+                    i.{_qcol(cust_i)} as customer,
+                    i.{_qcol(loc_i)}  as location,
+                    i.{_qcol(serial_i)} as serial,
+
+                    CONVERT(varchar(10), {plan_date_expr}, 23) AS cluster_visit_plan,
+
+                    
+                    'PENDING' as status
+                FROM dbo.InstallBase i
+                LEFT JOIN dbo.WSR w
+                  ON UPPER(i.{_qcol(serial_i)}) = UPPER(w.{_qcol(serial_w)})
+                  AND w.{_qcol(visit_dt)} >= ?
+                  AND w.{_qcol(visit_dt)} < ?
+                WHERE w.{_qcol(serial_w)} IS NULL
+                """
+
+                cur.execute(sql,(start,end))
+
+
             rows = cur.fetchall()
             columns = [d[0] for d in cur.description]
 
-        out = []
-        for r in rows:
-            obj = {}
-            for i, c in enumerate(columns):
-                obj[c] = _json_safe(r[i])
-            out.append(obj)
+            result=[]
+            for r in rows:
+                obj={}
+                for i,c in enumerate(columns):
+                    obj[c]=_json_safe(r[i])
+                result.append(obj)
 
-        return jsonify({"columns": columns, "rows": out})
+            return jsonify({
+                "columns":columns,
+                "rows":result
+            })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+        return _json_err(str(e),500)
+        
+    
 @app.get("/api/engineers")
 def get_engineers():
 
@@ -3264,46 +3243,66 @@ def installbase_by_mc_status():
 @app.get("/api/installbase/by-active-status")
 def installbase_by_active_status():
 
+    need = _require_login_json()
+    if need:
+        return need
+
     status = (request.args.get("status") or "").strip().upper()
 
     try:
+        install_cols = _table_columns("dbo.InstallBase")
+
+        # 🔥 role based filter
+        base_where, base_params = _installbase_scope_where(install_cols)
+
+        where_parts = []
+        params = []
+
+        # role filter
+        if base_where:
+            where_parts.append(base_where.replace(" WHERE ", "", 1))
+            params += base_params
+
+        # active status filter
+        if status and status != "ALL":
+            where_parts.append(
+                "UPPER(LTRIM(RTRIM([Active Status]))) = ?"
+            )
+            params.append(status)
+
+        where_sql = ""
+        if where_parts:
+            where_sql = " WHERE " + " AND ".join(where_parts)
+
+        sql = f"""
+            SELECT *
+            FROM dbo.InstallBase
+            {where_sql}
+            ORDER BY [ID] DESC
+        """
+
         with get_conn() as conn:
             cur = conn.cursor()
-
-            base_sql = """
-                SELECT *
-                FROM dbo.InstallBase
-            """
-
-            params = []
-
-            if status and status != "ALL":
-                base_sql += """
-                    WHERE UPPER(LTRIM(RTRIM([Active Status]))) = ?
-                """
-                params.append(status)
-
-            cur.execute(base_sql, params)
+            cur.execute(sql, params)
 
             rows = cur.fetchall()
             columns = [col[0] for col in cur.description]
 
-            result = []
-            for r in rows:
-                row_dict = {}
-                for i, col in enumerate(columns):
-                    row_dict[col] = _json_safe(r[i])
-                    
-                result.append(row_dict)
+        result = []
+        for r in rows:
+            row_dict = {}
+            for i, col in enumerate(columns):
+                row_dict[col] = _json_safe(r[i])
+            result.append(row_dict)
 
-            return jsonify({
-                "columns": columns,
-                "rows": result
-            })
+        return jsonify({
+            "columns": columns,
+            "rows": result
+        })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500  
-
+        return jsonify({"error": str(e)}), 500
+    
 
 
 # ===================== BREAKDOWN MODULE =====================
