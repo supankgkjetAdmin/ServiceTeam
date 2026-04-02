@@ -174,13 +174,12 @@ def _qcol(c: str) -> str:
 
 def _json_safe(v):
     if v is None:
-        return ""
+        return "N/A"
 
     # datetime / date
     if isinstance(v, (datetime, date)):
         return v.strftime("%d-%m-%Y")
 
-    # string date like "Thu, 01 Dec 2022 00:00:00 GMT"
     try:
         if isinstance(v, str) and "GMT" in v:
             from email.utils import parsedate_to_datetime
@@ -189,7 +188,8 @@ def _json_safe(v):
     except:
         pass
 
-    return str(v)
+    v = str(v).strip()
+    return v if v else "N/A"
 
 def _json_err(msg, code=400):
     return jsonify({"error": msg}), code
