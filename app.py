@@ -3065,7 +3065,6 @@ def api_installbase_excel_upload():
         if df.empty:
             return jsonify({"error": "Excel is empty"}), 400
 
-        # Remove extra spaces from headers
         df.columns = df.columns.str.strip()
 
         install_cols = _table_columns("dbo.InstallBase")
@@ -3079,10 +3078,11 @@ def api_installbase_excel_upload():
         )
 
         if not serial_col:
-            return jsonify({"error": "Serial column not found in InstallBase"}), 400
+            return jsonify({"error": "Serial column not found"}), 400
 
         inserted = 0
-        skipped_duplicates = 0
+        updated = 0
+        skipped = 0
 
         with get_conn() as conn:
             cur = conn.cursor()
@@ -3097,7 +3097,7 @@ def api_installbase_excel_upload():
                 if not serial_value:
                     continue
 
-                # 🔎 Duplicate Check (Strong Trim + Upper)
+                # ================= CHECK EXIST =================
                 cur.execute(
                     f"""
                     SELECT TOP 1 1 
@@ -3107,17 +3107,14 @@ def api_installbase_excel_upload():
                     (serial_value,)
                 )
 
-                if cur.fetchone():
-                    skipped_duplicates += 1
-                    continue
+                exists = cur.fetchone()
 
-                insert_cols = []
-                insert_vals = []
+                cols = []
                 params = []
 
                 for col in install_cols:
 
-                    # ❌ Skip identity & computed columns
+                    # skip identity / formula columns
                     if _norm(col) in [
                         "id",
                         "amcduedate",
@@ -3128,7 +3125,6 @@ def api_installbase_excel_upload():
                     ]:
                         continue
 
-                    # ✅ Extra Excel column skip automatically
                     if col not in df.columns:
                         continue
 
@@ -3137,14 +3133,14 @@ def api_installbase_excel_upload():
                     if pd.isna(value):
                         continue
 
-                    # ================= CLEAN EXCEL SPECIAL CHARACTERS =================
+                    # clean excel garbage
                     if isinstance(value, str):
                         value = value.replace("_x0002_", "") \
                                      .replace("_x0003_", "") \
                                      .replace("_x000D_", "") \
                                      .strip()
 
-                    # ================= TYPE CONVERSION =================
+                    # type convert
                     dtype = (col_types.get(col) or "").lower()
 
                     if dtype in ("date", "datetime", "datetime2", "smalldatetime"):
@@ -3153,49 +3149,56 @@ def api_installbase_excel_upload():
                         except:
                             value = None
 
-                    insert_cols.append(f"[{col}]")
-                    insert_vals.append("?")
+                    cols.append(col)
                     params.append(value)
 
-                if not insert_cols:
+                if not cols:
+                    skipped += 1
                     continue
 
-                sql = f"""
-                    INSERT INTO dbo.InstallBase
-                    ({', '.join(insert_cols)})
-                    VALUES ({', '.join(insert_vals)})
-                """
+                # ================= UPDATE =================
+                if exists:
 
-                cur.execute(sql, params)
-                inserted += 1
+                    set_sql = ", ".join([f"[{c}] = ?" for c in cols])
 
-            conn.commit()
+                    sql = f"""
+                        UPDATE dbo.InstallBase
+                        SET {set_sql}
+                        WHERE {_cmp_ci_trim(serial_col)} = UPPER(?)
+                    """
 
-            # ================= FINAL SAFETY CLEAN (DB LEVEL) =================
-            cur.execute("""
-                UPDATE dbo.InstallBase
-                SET [CUSTOMER NAME] =
-                    REPLACE(
-                        REPLACE(
-                            REPLACE([CUSTOMER NAME], '_x0002_', ''),
-                        '_x0003_', ''),
-                    '_x000D_', '')
-                WHERE [CUSTOMER NAME] LIKE '%_x000%'
-            """)
+                    cur.execute(sql, params + [serial_value])
+                    updated += 1
+
+                # ================= INSERT =================
+                else:
+
+                    col_sql = ", ".join([f"[{c}]" for c in cols])
+                    val_sql = ", ".join(["?"] * len(cols))
+
+                    sql = f"""
+                        INSERT INTO dbo.InstallBase
+                        ({col_sql})
+                        VALUES ({val_sql})
+                    """
+
+                    cur.execute(sql, params)
+                    inserted += 1
 
             conn.commit()
 
         return jsonify({
-            "message": "InstallBase Excel Uploaded Successfully ✅",
+            "message": "InstallBase Upload Complete ✅",
             "inserted": inserted,
-            "skipped_duplicates": skipped_duplicates
+            "updated": updated,
+            "skipped": skipped
         })
 
     except Exception as e:
-        print("INSTALLBASE UPLOAD ERROR:", str(e))
+        print("UPLOAD ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
     
-    
+        
 @app.get("/api/installbase/by-mc-status")
 def installbase_by_mc_status():
 

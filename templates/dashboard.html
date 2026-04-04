@@ -3522,7 +3522,6 @@ function openInstallFilePicker() {
     document.getElementById("installExcelFileInput").click();
 }
 
-
 function uploadInstallExcel(input) {
 
     if (!input.files.length) return;
@@ -3536,7 +3535,6 @@ function uploadInstallExcel(input) {
     const btn = document.getElementById("btnInstallUpload");
     const spinner = document.getElementById("loadingSpinner");
 
-    // Disable button + show spinner
     btn.disabled = true;
     spinner.style.display = "flex";
 
@@ -3561,6 +3559,7 @@ function uploadInstallExcel(input) {
         btn.disabled = false;
 
         if (xhr.status === 200) {
+
             const data = JSON.parse(xhr.responseText);
 
             bar.style.width = "100%";
@@ -3568,8 +3567,9 @@ function uploadInstallExcel(input) {
 
             alert(
                 "✅ Upload Success\n\n" +
-                "Inserted: " + data.inserted +
-                "\nSkipped Duplicates: " + data.skipped_duplicates
+                "Inserted: " + (data.inserted || 0) +
+                "\nUpdated: " + (data.updated || 0) +
+                "\nSkipped: " + (data.skipped || 0)
             );
 
             openMaster();
@@ -3595,7 +3595,6 @@ function uploadInstallExcel(input) {
 
     xhr.send(formData);
 }
-
 
 // ==========================
 // TRANSPORT AUTO CALCULATION
