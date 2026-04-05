@@ -222,8 +222,12 @@ def get_user(username: str):
 
 @app.get("/")
 def home():
-    return render_template("login.html", error=None)
 
+    # already logged in → go dashboard
+    if "user" in session:
+        return redirect(url_for("dashboard"))
+
+    return render_template("login.html", error=None)
 
 @app.post("/login")
 def login_post():
@@ -3418,6 +3422,13 @@ def sms_page():
         type=type   # 👈 PASS TO HTML
     )
 
+
+@app.after_request
+def add_header(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 
 # ===================== RUN =====================
